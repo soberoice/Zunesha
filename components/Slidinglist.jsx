@@ -72,9 +72,7 @@ const Slidinglist = ({ data, limit }) => {
                   bottom: 0,
                 }}
               >
-                <>
                   <Icon name="closed-captioning" /> {item.sub}
-                </>
               </Text>
             )}
 

@@ -20,13 +20,21 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/fa.png",
         "backgroundColor": "#000000"
-      }
+      },
+      "package": "com.anonymous.app"
     },
     "web": {
       "favicon": "./assets/fa.png"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      "expo-video",
+      [
+        "expo-dev-client",
+        {
+          "launchMode": "most-recent"
+        }
+      ]
     ]
   }
 }

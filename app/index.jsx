@@ -9,6 +9,7 @@ import Watchscreen from "../pages/Watchscreen";
 import AnimeDetails from "../pages/AnimeDetails";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NavigationContainer } from "@react-navigation/native"; // ✅ Import here
+import WatchEpisode from "../pages/WatchEpisode";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -34,7 +35,7 @@ function Tabs() {
           else if (route.name === "WatchList") iconName = "bookmark";
           else if (route.name === "watch") iconName = "tv";
 
-          return <Icon name={iconName} size={size} color={color} />;
+          return <Icon name={iconName} size={20} color={color} />;
         },
       })}
     >
@@ -48,7 +49,7 @@ function Tabs() {
 
 export default function App() {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator styles={styles.container}>
       <Stack.Screen
         name="Tabs"
         component={Tabs}
@@ -58,6 +59,11 @@ export default function App() {
         name="Details"
         options={{ headerShown: false }}
         component={AnimeDetails}
+      />
+      <Stack.Screen
+        name="watchepisode"
+        options={{ headerShown: false }}
+        component={WatchEpisode}
       />
     </Stack.Navigator>
   );

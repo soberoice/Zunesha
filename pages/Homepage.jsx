@@ -1,4 +1,11 @@
-import { SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import Slidinglist from "../components/Slidinglist";
 import Homebanner from "../components/Homebanner";
@@ -6,9 +13,11 @@ import Homebanner from "../components/Homebanner";
 const Homepage = () => {
   const [topAiring, setTopAiring] = useState();
   const [newEpisodes, setNewEpisodes] = useState();
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true);
         const topResponse = await fetch(
           "https://consapi-chi.vercel.app/anime/zoro/top-airing"
         );
@@ -21,10 +30,20 @@ const Homepage = () => {
         setNewEpisodes(newData.results);
       } catch (error) {
         console.error(error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchData();
   }, []);
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator color={"#32a88b"} size={50} />
+      </View>
+    );
+  }
   return (
     <SafeAreaView style={{ backgroundColor: "#000", flex: 1 }}>
       <ScrollView>
@@ -106,4 +125,11 @@ const Homepage = () => {
 
 export default Homepage;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#000",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+});
