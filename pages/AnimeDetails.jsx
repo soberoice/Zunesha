@@ -173,7 +173,7 @@ const AnimeDetails = ({ route }) => {
               Related
             </Text>
           </TouchableOpacity>
-        </View>{" "}
+        </View>
         {tab === "Episodes" && data?.episodes?.length > 0 && (
           <React.Suspense fallback={<Text><ActivityIndicator color="#32a88b" /></Text>}>
             <AnimeDetailsEpList ep={data.episodes} image={data?.image} />

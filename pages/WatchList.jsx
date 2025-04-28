@@ -1,14 +1,19 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import { StyleSheet, Text, View } from "react-native";
+import React from "react";
 
 const WatchList = () => {
   return (
     <View>
       <Text>WatchList</Text>
     </View>
-  )
-}
+  );
+};
 
-export default WatchList
+export default WatchList;
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#001",
+  },
+});
