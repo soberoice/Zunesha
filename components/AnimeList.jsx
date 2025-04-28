@@ -1,26 +1,14 @@
-import {
-  Image,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React from "react";
-import Icon from "react-native-vector-icons/FontAwesome6";
+import Icon from "react-native-vector-icons/FontAwesome";
 import { useNavigation } from "expo-router";
 
-const Slidinglist = ({ data, limit }) => {
+const AnimeList = ({ data }) => {
   const navigation = useNavigation();
-
   return (
-    <ScrollView
-      scrollEnabled={true}
-      horizontal={true}
-      contentContainerStyle={styles.scrollContainer}
-    >
+    <View style={styles.container}>
       {data &&
-        data.slice(0, limit).map((item, index) => (
+        data.map((item, index) => (
           <TouchableOpacity
             key={item.id}
             onPress={() => navigation.navigate("Details", { id: item.id })}
@@ -72,7 +60,7 @@ const Slidinglist = ({ data, limit }) => {
                   bottom: 0,
                 }}
               >
-                  <Icon name="closed-captioning" /> {item.sub}
+                <Icon name="closed-captioning" /> {item.sub}
               </Text>
             )}
 
@@ -100,24 +88,26 @@ const Slidinglist = ({ data, limit }) => {
             </Text>
           </TouchableOpacity>
         ))}
-    </ScrollView>
+    </View>
   );
 };
 
-export default Slidinglist;
+export default AnimeList;
 
 const styles = StyleSheet.create({
-  scrollContainer: {
-    padding: 16,
+  container: {
+    paddingHorizontal: 10,
     flexDirection: "row",
-    height: 250,
-    flexWrap: "nowrap",
+    flexWrap: "wrap",
+    paddingVertical: 16,
   },
   itemContainer: {
     width: 150,
+    backgroundColor: "#000",
     height: 200,
     paddingBottom: 10,
     marginHorizontal: 10,
+    marginBottom: 50
   },
   image: {
     width: 150,

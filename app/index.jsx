@@ -21,7 +21,7 @@ function Tabs() {
       screenOptions={({ route }) => ({
         tabBarActiveTintColor: "#fff",
         tabBarInactiveTintColor: "#32a88b",
-        tabBarStyle: { backgroundColor: "#000" },
+        tabBarStyle: { backgroundColor: "#000", borderColor: '#000', height: 70 },
         headerShown: false,
         tabBarLabelStyle: {
           fontSize: 12,
@@ -72,8 +72,6 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#000",
-    color: "#fff",
     width: "100%",
   },
 });

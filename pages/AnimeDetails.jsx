@@ -14,6 +14,7 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import { LinearGradient } from "expo-linear-gradient";
 import GenreTagList from "../components/GenreTagList";
 import Slidinglist from "../components/Slidinglist";
+import AnimeDetailsEpList from "../components/AnimeDetailsEpList";
 const EpisodeList = React.lazy(() => import("../components/EpisodeList"));
 
 const AnimeDetails = ({ route }) => {
@@ -21,6 +22,7 @@ const AnimeDetails = ({ route }) => {
   const [data, setData] = useState();
   const [tab, setTab] = useState("Episodes");
   const [loading, setLoading] = useState(false);
+  const [desToggle, setDesToggle] = useState(false);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -41,7 +43,7 @@ const AnimeDetails = ({ route }) => {
   if (loading) {
     return (
       <View style={styles.container}>
-        <ActivityIndicator color={"#32a88b"} size={50} />
+        <Text><ActivityIndicator color={"#32a88b"} size={50} /></Text>
       </View>
     );
   }
@@ -50,7 +52,7 @@ const AnimeDetails = ({ route }) => {
       <ScrollView>
         <ImageBackground style={styles.image} source={{ uri: data?.image }}>
           <LinearGradient
-            colors={["transparent", "rgb(0, 0, 0)"]}
+            colors={["transparent", "#001"]}
             start={{ x: 0.5, y: 0 }}
             end={{ x: 0.5, y: 1 }}
             style={styles.slide}
@@ -60,25 +62,23 @@ const AnimeDetails = ({ route }) => {
                 flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "space-between",
-                width: "100%",
+                width: "90%",
                 gap: 10,
               }}
             >
-              <View>
-                <Text numberOfLines={1} style={styles.text}>
-                  {data?.title}
-                </Text>
+              <View style={{ width: "90%" }}>
+                <Text style={styles.text}>{data?.title}</Text>
                 <View
                   style={{
                     flexDirection: "row",
-                    justifyContent: "space-between",
                     paddingVertical: 10,
+                    justifyContent: "space-between",
+                    width: "100%",
                   }}
                 >
                   <Text
                     style={{
                       color: "#32a88b",
-                      paddingHorizontal: 5,
                     }}
                   >
                     {data?.status}
@@ -86,7 +86,6 @@ const AnimeDetails = ({ route }) => {
                   <Text
                     style={{
                       color: "#fff",
-                      paddingHorizontal: 5,
                     }}
                   >
                     {data?.season}
@@ -94,7 +93,6 @@ const AnimeDetails = ({ route }) => {
                   <Text
                     style={{
                       color: "#fff",
-                      paddingHorizontal: 5,
                     }}
                   >
                     {data?.totalEpisodes} Episodes
@@ -102,7 +100,7 @@ const AnimeDetails = ({ route }) => {
                   <Text
                     style={{
                       color: "#32a88b",
-                      paddingHorizontal: 5,
+                      paddingHorizontal: 4,
                       borderWidth: 1,
                       borderColor: "#32a88b",
                       borderRadius: 5,
@@ -113,15 +111,25 @@ const AnimeDetails = ({ route }) => {
                 </View>
               </View>
               <TouchableOpacity style={styles.btn2}>
-                <Icon name="bookmark" size={20} color="white" />
+                <Text>
+                  <Icon name="bookmark" size={20} color="white" />
+                </Text>
               </TouchableOpacity>
             </View>
           </LinearGradient>
         </ImageBackground>
         <GenreTagList genres={data?.genres} />
-        <ScrollView contentContainerStyle={styles.descContainer}>
-          <Text style={styles.des}>{data?.description}</Text>
-        </ScrollView>
+        <Text numberOfLines={desToggle ? null : 5} style={styles.des}>
+          {data?.description}
+        </Text>
+        <TouchableOpacity
+          style={{ marginLeft: "auto", marginRight: 10 }}
+          onPress={() => setDesToggle(!desToggle)}
+        >
+          <Text style={{ color: "#32a88b", fontWeight: "bold" }}>
+            {!desToggle ? "+ more" : "- less"}
+          </Text>
+        </TouchableOpacity>
         <View
           style={{
             flexDirection: "row",
@@ -167,8 +175,8 @@ const AnimeDetails = ({ route }) => {
           </TouchableOpacity>
         </View>{" "}
         {tab === "Episodes" && data?.episodes?.length > 0 && (
-          <React.Suspense fallback={<ActivityIndicator color="#32a88b" />}>
-            <EpisodeList ep={data.episodes} />
+          <React.Suspense fallback={<Text><ActivityIndicator color="#32a88b" /></Text>}>
+            <AnimeDetailsEpList ep={data.episodes} image={data?.image} />
           </React.Suspense>
         )}
         {tab === "Related" && (
@@ -177,7 +185,7 @@ const AnimeDetails = ({ route }) => {
             limit={data?.relatedAnime.length}
           />
         )}
-        <View>
+        <View style={{ marginVertical: 30 }}>
           <Text
             style={{
               paddingLeft: 10,
@@ -200,7 +208,7 @@ export default AnimeDetails;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#000",
+    backgroundColor: "#001",
     justifyContent: "center",
     alignItems: "center",
   },
@@ -208,7 +216,7 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 20,
     fontWeight: "700",
-    padding: 10,
+    paddingVertical: 10,
   },
   image: {
     width: "100%",
@@ -216,12 +224,9 @@ const styles = StyleSheet.create({
   },
   des: {
     color: "#fff",
-    fontSize: 15,
+    fontSize: 12,
     fontWeight: "400",
     padding: 10,
-  },
-  descContainer: {
-    height: 200,
   },
   slide: {
     position: "absolute",

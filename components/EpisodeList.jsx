@@ -32,8 +32,18 @@ const EpisodeList = ({ ep }) => {
     );
     console.log(filteredEp.number);
     return (
-      <TouchableOpacity style={styles.btn} key={index} 
-      onPress={() => navigation.navigate("watchepisode", { id: filteredEp[0]?.id })}>
+      <TouchableOpacity
+        style={styles.btn}
+        key={index}
+        onPress={() =>
+          navigation.navigate("watchepisode", {
+            id: filteredEp[0]?.id,
+            ep: ep,
+            tilte: filteredEp[0].title,
+            number: filteredEp[0].number,
+          })
+        }
+      >
         <Text style={{ color: "#fff" }}>{filteredEp[0]?.number}</Text>
       </TouchableOpacity>
     );
@@ -67,8 +77,18 @@ const EpisodeList = ({ ep }) => {
         {searchInput
           ? search()
           : chunks[epList - 1]?.map((item) => (
-              <TouchableOpacity style={styles.btn} key={item?.id} 
-              onPress={() => navigation.navigate("watchepisode", { id: item.id })}>
+              <TouchableOpacity
+                style={styles.btn}
+                key={item?.id}
+                onPress={() =>
+                  navigation.navigate("watchepisode", {
+                    id: item.id,
+                    ep: ep,
+                    title: item.title,
+                    number: item.number,
+                  })
+                }
+              >
                 <Text style={{ color: "#fff" }}>{item?.number}</Text>
               </TouchableOpacity>
             ))}

@@ -1,16 +1,26 @@
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import Video from "react-native-video";
 import React, { useEffect, useRef, useState } from "react";
-import { useVideoPlayer, VideoView } from "expo-video";
+import EpisodeList from "../components/EpisodeList";
 
 const WatchEpisode = ({ route }) => {
-  const { id } = route.params;
+  const { id, ep, title, number } = route.params;
   const [data, setData] = useState();
   const [loading, setLoading] = useState(false);
   const video = useRef(null);
+  const [subtitleTracks, setSubtitleTracks] = useState([]);
+  const [selectedSubtitleTrack, setSelectedSubtitleTrack] = useState({
+    type: "index",
+    value: 0,
+  });
+
+  const [isVideoReady, setIsVideoReady] = useState(false);
+  const [NullSubtitleIndex, setNullSubtitleIndex] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setData();
         setLoading(true);
         const response = await fetch(
           `https://consapi-chi.vercel.app/anime/zoro/watch/${id}`
@@ -26,42 +36,90 @@ const WatchEpisode = ({ route }) => {
     fetchData();
   }, [id]);
 
-  //   if (loading) {
-  //     return (
-  //       <View style={styles.container}>
-  //         <ActivityIndicator color={"#32a88b"} size={50} />
-  //       </View>
-  //     );
-  //   }
+  useEffect(() => {
+    if (data?.subtitles && data?.subtitles?.length > 0) {
+      setSubtitleTracks(data?.subtitles);
+      console.log("Subtitle Tracks: ", data?.subtitles);
+    }
+  }, [data?.subtitles]);
+
   const videoSource = data?.sources[0]?.url;
-  const player = useVideoPlayer(videoSource, (player) => {
-    player.loop = true;
-    player.play();
-    console.log(videoSource);
-  });
+
   return (
     <View style={styles.container}>
-      {data?.sources?.[0]?.url ? (
-        <VideoView
-          allowsFullscreen
-          player={player}
-          source={{ uri: `${proxy}${data.sources[0].url}` }}
-          style={styles.video}
-          useNativeControls
-          resizeMode="contain"
-          isLooping
-          onError={(e) => console.error("Video error:", e)}
-        />
+      {videoSource ? (
+        <View>
+          <Video
+            ref={video}
+            allowsFullscreen
+            resizeMode={"contain"}
+            source={{
+              uri: videoSource,
+              textTracks: subtitleTracks?.map((track, index) => ({
+                title: track.lang || "Untitled",
+                language: track.lang?.toLowerCase(),
+                uri: track.url || "",
+                index,
+                type: "text/vtt",
+              })),
+            }}
+            onLoad={(value) => {
+              setIsVideoReady(true);
+              const nullTrackCount =
+                value.textTracks?.filter(
+                  (track) => !track.language && !track.title
+                ).length || 0;
+              setNullSubtitleIndex(nullTrackCount);
+              console.log("nullIndex:", nullTrackCount);
+            }}
+            style={styles.video}
+            onTextTracks={(event) => {
+              console.log("Text Tracks:", event);
+              const tracks = event.textTracks;
+
+              const englishTrack = tracks.find((track) =>
+                track.language?.toLowerCase().includes("english")
+              );
+
+              if (englishTrack) {
+                setSelectedSubtitleTrack({
+                  type: "index",
+                  value: englishTrack.index,
+                });
+                console.log(
+                  "Selected English subtitle at index:",
+                  englishTrack.index
+                );
+              } else {
+                console.log("No English subtitle found");
+              }
+            }}
+            selectedTextTrack={selectedSubtitleTrack}
+            controls
+            onError={(e) => console.error("Video error:", e)}
+            subtitleStyle={{ paddingBottom: 25, fontSize: 15, opacity: 0.8 }}
+          />
+        </View>
       ) : (
-        <Text style={{ color: "#fff", textAlign: "center", marginTop: 20 }}>
-          No video source found.
-        </Text>
+        <View
+          style={{
+            color: "#fff",
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: 20,
+            height: 230,
+          }}
+        >
+          <ActivityIndicator color={"#32a88b"} size={50} />
+        </View>
       )}
+      <Text style={{ fontSize: 20, color: "#fff" }}>
+        Episode {number}: {title}
+      </Text>
+      <EpisodeList ep={ep} />
     </View>
   );
 };
-
-export default WatchEpisode;
 
 const styles = StyleSheet.create({
   container: {
@@ -69,6 +127,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#000",
   },
   video: {
-    flex: 1,
+    width: "100%",
+    height: 250,
   },
 });
+
+export default WatchEpisode;

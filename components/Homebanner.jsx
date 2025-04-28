@@ -60,7 +60,7 @@ const Homebanner = () => {
           }}
         >
           <LinearGradient
-            colors={["transparent", "rgb(0, 0, 0)"]}
+            colors={["transparent", "#001"]}
             start={{ x: 0.5, y: 0 }}
             end={{ x: 0.5, y: 1 }}
             style={styles.slide}
