@@ -10,19 +10,23 @@ import {
   View,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import Icon from "react-native-vector-icons/FontAwesome";
+import Icon from "react-native-vector-icons/MaterialIcons";
 import { LinearGradient } from "expo-linear-gradient";
 import GenreTagList from "../components/GenreTagList";
 import Slidinglist from "../components/Slidinglist";
 import AnimeDetailsEpList from "../components/AnimeDetailsEpList";
+import { useList } from "../components/Provider/WhatchlistProvider";
 const EpisodeList = React.lazy(() => import("../components/EpisodeList"));
 
 const AnimeDetails = ({ route }) => {
+  const { addToWatchList, inWatchList } = useList();
   const { id } = route.params;
   const [data, setData] = useState();
   const [tab, setTab] = useState("Episodes");
   const [loading, setLoading] = useState(false);
   const [desToggle, setDesToggle] = useState(false);
+  const isInWatchList = data?.id ? inWatchList(id) : false;
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -38,12 +42,15 @@ const AnimeDetails = ({ route }) => {
         setLoading(false);
       }
     };
+
     fetchData();
   }, [id]);
-  if (loading) {
+  if (!data && loading) {
     return (
       <View style={styles.container}>
-        <Text><ActivityIndicator color={"#32a88b"} size={50} /></Text>
+        <Text>
+          <ActivityIndicator color={"#32a88b"} size={50} />
+        </Text>
       </View>
     );
   }
@@ -110,9 +117,18 @@ const AnimeDetails = ({ route }) => {
                   </Text>
                 </View>
               </View>
-              <TouchableOpacity style={styles.btn2}>
+              <TouchableOpacity
+                style={styles.btn2}
+                onPress={() => addToWatchList(data)}
+              >
                 <Text>
-                  <Icon name="bookmark" size={20} color="white" />
+                  {data && (
+                    <Icon
+                      name={isInWatchList ? "bookmark-added" : "bookmark-add"}
+                      size={30}
+                      color={isInWatchList ? "#32a88b" : "#fff"}
+                    />
+                  )}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -175,15 +191,18 @@ const AnimeDetails = ({ route }) => {
           </TouchableOpacity>
         </View>
         {tab === "Episodes" && data?.episodes?.length > 0 && (
-          <React.Suspense fallback={<Text><ActivityIndicator color="#32a88b" /></Text>}>
+          <React.Suspense
+            fallback={
+              <Text>
+                <ActivityIndicator color="#32a88b" />
+              </Text>
+            }
+          >
             <AnimeDetailsEpList ep={data.episodes} image={data?.image} />
           </React.Suspense>
         )}
         {tab === "Related" && (
-          <Slidinglist
-            data={data?.relatedAnime}
-            limit={data?.relatedAnime.length}
-          />
+          <Slidinglist data={data?.relatedAnime} limit={15} />
         )}
         <View style={{ marginVertical: 30 }}>
           <Text

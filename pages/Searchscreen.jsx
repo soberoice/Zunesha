@@ -6,11 +6,13 @@ import {
   NativeViewGestureHandler,
   ScrollView,
 } from "react-native-gesture-handler";
-import SearchResultsList from "../components/SearchResultsList";
+import HorizontalAnimeList from "../components/HorizontalAnimeList";
+import AnimeList from "../components/AnimeList";
 
 const Searchscreen = () => {
   const [searchInput, setSearchInput] = useState();
   const [searchResults, setSearchResults] = useState();
+  const [placeholder, setPlaceholder] = useState();
   const [loading, setLoading] = useState(false);
   const fetchData = async () => {
     setLoading(true);
@@ -28,6 +30,25 @@ const Searchscreen = () => {
       setLoading(false);
     }
   };
+  useEffect(() => {
+    if (!searchInput) {
+      const fetchPlaceholder = async () => {
+        setPlaceholder([]);
+        try {
+          setLoading(true);
+          const respons = await fetch(
+            `https://consapi-chi.vercel.app/anime/zoro//most-favorite`
+          );
+          const data = await respons.json();
+          setPlaceholder(data.results);
+        } catch (error) {
+          console.error(error);
+        }
+      };
+      fetchPlaceholder();
+    }
+  }, []);
+
   return (
     <GestureHandlerRootView>
       <View style={styles.container}>
@@ -38,10 +59,15 @@ const Searchscreen = () => {
           style={styles.searchBar}
           onSubmitEditing={() => fetchData()}
         />
+        {!searchInput && (
+          <ScrollView>
+            <AnimeList data={placeholder} />
+          </ScrollView>
+        )}
         {!loading ? (
           searchResults && (
             <ScrollView>
-              <SearchResultsList data={searchResults} />
+              <HorizontalAnimeList data={searchResults} />
             </ScrollView>
           )
         ) : (

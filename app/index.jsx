@@ -10,6 +10,7 @@ import AnimeDetails from "../pages/AnimeDetails";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NavigationContainer } from "@react-navigation/native"; // ✅ Import here
 import WatchEpisode from "../pages/WatchEpisode";
+import { WatchListProvider } from "../components/Provider/WhatchlistProvider";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -21,7 +22,11 @@ function Tabs() {
       screenOptions={({ route }) => ({
         tabBarActiveTintColor: "#fff",
         tabBarInactiveTintColor: "#32a88b",
-        tabBarStyle: { backgroundColor: "#000", borderColor: '#000', height: 70 },
+        tabBarStyle: {
+          backgroundColor: "#000",
+          borderColor: "#000",
+          height: 70,
+        },
         headerShown: false,
         tabBarLabelStyle: {
           fontSize: 12,
@@ -49,23 +54,25 @@ function Tabs() {
 
 export default function App() {
   return (
-    <Stack.Navigator styles={styles.container}>
-      <Stack.Screen
-        name="Tabs"
-        component={Tabs}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Details"
-        options={{ headerShown: false }}
-        component={AnimeDetails}
-      />
-      <Stack.Screen
-        name="watchepisode"
-        options={{ headerShown: false }}
-        component={WatchEpisode}
-      />
-    </Stack.Navigator>
+    <WatchListProvider>
+      <Stack.Navigator styles={styles.container}>
+        <Stack.Screen
+          name="Tabs"
+          component={Tabs}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Details"
+          options={{ headerShown: false }}
+          component={AnimeDetails}
+        />
+        <Stack.Screen
+          name="watchepisode"
+          options={{ headerShown: false }}
+          component={WatchEpisode}
+        />
+      </Stack.Navigator>
+    </WatchListProvider>
   );
 }
 

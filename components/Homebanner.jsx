@@ -9,13 +9,14 @@ import {
 } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import { LinearGradient } from "expo-linear-gradient";
-import Icon from "react-native-vector-icons/FontAwesome";
+import Icon from "react-native-vector-icons/MaterialIcons";
 import Navbar from "./Navbar";
 import { useNavigation } from "expo-router";
-
 const { width } = Dimensions.get("window");
+import { useList } from "../components/Provider/WhatchlistProvider";
 
 const Homebanner = () => {
+  const { addToWatchList, inWatchList } = useList();
   const navigation = useNavigation();
   const [data, setData] = useState([]);
 
@@ -26,7 +27,6 @@ const Homebanner = () => {
           "https://consapi-chi.vercel.app/anime/zoro/top-airing"
         );
         const json = await response.json();
-        console.log("Fetched data:", json);
         setData(json.results.slice(0, 5) || []);
       } catch (error) {
         console.error("Error fetching banner data:", error);
@@ -70,19 +70,34 @@ const Homebanner = () => {
             </Text>
             <View style={{ flexDirection: "row", gap: 10 }}>
               <TouchableOpacity style={styles.btn}>
+                <Icon name="play-circle" size={20} color="white" />
                 <Text
                   style={styles.btnText}
                   onPress={() =>
                     navigation.navigate("Details", { id: item.id })
                   }
                 >
-                  <Icon name="play-circle-o" size={15} color="white" /> Watch
-                  Now
+                  Watch Now
                 </Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.btn2}>
-                <Text style={styles.btnText}>
-                  <Icon name="bookmark" size={15} color="white" /> Watch Later
+              <TouchableOpacity
+                onPress={() => addToWatchList(item)}
+                style={styles.btn2}
+              >
+                <Icon
+                  name={!inWatchList(item.id) ? "bookmark-add" : "bookmark-added"}
+                  size={20}
+                  color={!inWatchList(item.id) ? "#fff" : "#32a88b"}
+                />
+                <Text
+                  style={{
+                    color: !inWatchList(item.id) ? "#fff" : "#32a88b",
+                    fontSize: 13,
+                    fontWeight: "bold",
+                    textAlign: "center",
+                  }}
+                >
+                  Watch Later
                 </Text>
               </TouchableOpacity>
             </View>
@@ -94,7 +109,7 @@ const Homebanner = () => {
   return (
     <View>
       <LinearGradient
-        colors={["transparent", "rgb(0, 0, 0)"]}
+        colors={["transparent", "#001"]}
         start={{ x: 0.5, y: 1 }}
         end={{ x: 0.5, y: 0 }}
         style={styles.navbar}
@@ -142,6 +157,10 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     marginTop: 10,
     width: "35%",
+    justifyContent: "center",
+    alignItems: "center",
+    display: "flex",
+    flexDirection: "row",
   },
   btn2: {
     backgroundColor: "transparent",
@@ -149,6 +168,10 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     marginTop: 10,
     padding: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    display: "flex",
+    flexDirection: "row",
   },
   btnText: {
     color: "#fff",

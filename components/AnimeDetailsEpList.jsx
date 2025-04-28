@@ -156,6 +156,7 @@ const styles = StyleSheet.create({
   scrollContainer: {
     overflow: "scroll",
     marginVertical: 10,
+    paddingHorizontal: 15
   },
 
   btn: {

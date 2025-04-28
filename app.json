@@ -28,7 +28,6 @@
     },
     "plugins": [
       "expo-router",
-      "expo-video",
       [
         "expo-dev-client",
         {
