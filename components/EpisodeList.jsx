@@ -106,10 +106,6 @@ const styles = StyleSheet.create({
     padding: 10,
     alignItems: "center",
   },
-  scrollView: {
-    height: 500,
-    overflow: "scroll",
-  },
   btn: {
     backgroundColor: "#32a88b",
     padding: 10,

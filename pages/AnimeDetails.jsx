@@ -4,6 +4,7 @@ import {
   ImageBackground,
   SafeAreaView,
   ScrollView,
+  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -17,6 +18,8 @@ import Slidinglist from "../components/Slidinglist";
 import AnimeDetailsEpList from "../components/AnimeDetailsEpList";
 import { useList } from "../components/Provider/WhatchlistProvider";
 const EpisodeList = React.lazy(() => import("../components/EpisodeList"));
+
+import * as ScreenOrientation from "expo-screen-orientation";
 
 const AnimeDetails = ({ route }) => {
   const { addToWatchList, inWatchList } = useList();
@@ -42,9 +45,11 @@ const AnimeDetails = ({ route }) => {
         setLoading(false);
       }
     };
-
+    ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
+    StatusBar.setHidden(false);
     fetchData();
   }, [id]);
+
   if (!data && loading) {
     return (
       <View style={styles.container}>

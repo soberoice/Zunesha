@@ -2,6 +2,7 @@ import {
   ActivityIndicator,
   SafeAreaView,
   ScrollView,
+  StatusBar,
   StyleSheet,
   Text,
   View,
@@ -9,6 +10,8 @@ import {
 import React, { useEffect, useState } from "react";
 import Slidinglist from "../components/Slidinglist";
 import Homebanner from "../components/Homebanner";
+
+import * as ScreenOrientation from "expo-screen-orientation";
 
 const Homepage = () => {
   const [topAiring, setTopAiring] = useState();
@@ -40,9 +43,11 @@ const Homepage = () => {
         setLoading(false);
       }
     };
+    ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
+    StatusBar.setHidden(false);
     fetchData();
   }, []);
-
+  
   if (loading) {
     return (
       <View style={styles.container}>

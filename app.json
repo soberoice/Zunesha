@@ -2,9 +2,9 @@
   "expo": {
     "scheme": "anisober",
     "name": "anisober",
-    "slug": "anisober",
+    "slug": "app",
     "version": "1.0.0",
-    "orientation": "portrait",
+    "orientation": "default",
     "icon": "./assets/ASlogo.png",
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,

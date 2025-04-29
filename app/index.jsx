@@ -55,23 +55,23 @@ function Tabs() {
 export default function App() {
   return (
     <WatchListProvider>
-      <Stack.Navigator styles={styles.container}>
-        <Stack.Screen
-          name="Tabs"
-          component={Tabs}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Details"
-          options={{ headerShown: false }}
-          component={AnimeDetails}
-        />
-        <Stack.Screen
-          name="watchepisode"
-          options={{ headerShown: false }}
-          component={WatchEpisode}
-        />
-      </Stack.Navigator>
+        <Stack.Navigator>
+          <Stack.Screen
+            name="Tabs"
+            component={Tabs}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Details"
+            options={{ headerShown: false }}
+            component={AnimeDetails}
+          />
+          <Stack.Screen
+            name="watchepisode"
+            options={{ headerShown: false }}
+            component={WatchEpisode}
+          />
+        </Stack.Navigator>
     </WatchListProvider>
   );
 }
@@ -80,5 +80,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: "100%",
+    backgroundColor: "#001",
   },
 });

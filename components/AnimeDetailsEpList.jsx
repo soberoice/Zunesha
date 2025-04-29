@@ -107,6 +107,8 @@ const AnimeDetailsEpList = ({ ep, image }) => {
                     title: item.title,
 
                     number: item.number,
+
+                    cover: image
                   })
                 }
               >

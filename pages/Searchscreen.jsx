@@ -8,22 +8,26 @@ import {
 } from "react-native-gesture-handler";
 import HorizontalAnimeList from "../components/HorizontalAnimeList";
 import AnimeList from "../components/AnimeList";
+import Pagination from "../components/Pagination";
 
 const Searchscreen = () => {
   const [searchInput, setSearchInput] = useState();
   const [searchResults, setSearchResults] = useState();
   const [placeholder, setPlaceholder] = useState();
+  const [totalPages, setTotalPages] = useState();
   const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(1);
   const fetchData = async () => {
     setLoading(true);
     setSearchResults([]);
     try {
       setLoading(true);
       const respons = await fetch(
-        `https://consapi-chi.vercel.app/anime/zoro/${searchInput}`
+        `https://consapi-chi.vercel.app/anime/zoro/${searchInput}?page=${page}`
       );
       const data = await respons.json();
-      setSearchResults(data.results);
+      setSearchResults(data);
+      setTotalPages(data.totalPages);
     } catch (error) {
       console.error(error);
     } finally {
@@ -31,24 +35,8 @@ const Searchscreen = () => {
     }
   };
   useEffect(() => {
-    if (!searchInput) {
-      const fetchPlaceholder = async () => {
-        setPlaceholder([]);
-        try {
-          setLoading(true);
-          const respons = await fetch(
-            `https://consapi-chi.vercel.app/anime/zoro//most-favorite`
-          );
-          const data = await respons.json();
-          setPlaceholder(data.results);
-        } catch (error) {
-          console.error(error);
-        }
-      };
-      fetchPlaceholder();
-    }
-  }, []);
-
+    fetchData();
+  }, [page, searchInput]);
   return (
     <GestureHandlerRootView>
       <View style={styles.container}>
@@ -67,7 +55,13 @@ const Searchscreen = () => {
         {!loading ? (
           searchResults && (
             <ScrollView>
-              <HorizontalAnimeList data={searchResults} />
+              <HorizontalAnimeList data={searchResults.results} />
+              <Pagination
+                totalPages={totalPages}
+                setPage={setPage}
+                page={page}
+                hasNextPage={searchResults?.hasNextPage}
+              />
             </ScrollView>
           )
         ) : (
