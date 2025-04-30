@@ -17,9 +17,9 @@ import GenreTagList from "../components/GenreTagList";
 import Slidinglist from "../components/Slidinglist";
 import AnimeDetailsEpList from "../components/AnimeDetailsEpList";
 import { useList } from "../components/Provider/WhatchlistProvider";
-const EpisodeList = React.lazy(() => import("../components/EpisodeList"));
 
 import * as ScreenOrientation from "expo-screen-orientation";
+import { useNavigation } from "expo-router";
 
 const AnimeDetails = ({ route }) => {
   const { addToWatchList, inWatchList } = useList();
@@ -29,6 +29,7 @@ const AnimeDetails = ({ route }) => {
   const [loading, setLoading] = useState(false);
   const [desToggle, setDesToggle] = useState(false);
   const isInWatchList = data?.id ? inWatchList(id) : false;
+  const navigation = useNavigation();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -63,6 +64,14 @@ const AnimeDetails = ({ route }) => {
     <SafeAreaView style={styles.container}>
       <ScrollView>
         <ImageBackground style={styles.image} source={{ uri: data?.image }}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Icon
+              style={{ padding: 10 }}
+              name="keyboard-backspace"
+              color={"white"}
+              size={30}
+            />
+          </TouchableOpacity>
           <LinearGradient
             colors={["transparent", "#001"]}
             start={{ x: 0.5, y: 0 }}

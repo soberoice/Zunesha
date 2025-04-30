@@ -16,7 +16,9 @@ import * as ScreenOrientation from "expo-screen-orientation";
 import Slider from "@react-native-community/slider";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { useMemo } from "react";
-import * as SystemUI from "expo-system-ui";
+import VideoSettings from "../components/VideoSettings";
+import { useNavigation } from "expo-router";
+// import * as SystemUI from "expo-system-ui";
 
 const WatchEpisode = ({ route }) => {
   const { id, ep, title, number, image } = route.params;
@@ -24,7 +26,7 @@ const WatchEpisode = ({ route }) => {
   const [loading, setLoading] = useState(false);
   const video = useRef(null);
   const [subtitleTracks, setSubtitleTracks] = useState([]);
-  const [paused, setPaused] = useState(true);
+  const [subtitleIndex, setSubtitleIndex] = useState(2);
   const [isSeeking, setIsSeeking] = useState(false);
   const [seekTime, setSeekTime] = useState(0);
   const [isFullScreen, setIsFullScreen] = useState(false);
@@ -42,12 +44,12 @@ const WatchEpisode = ({ route }) => {
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const timeoutRef = useRef(null);
-  const hasSetSubtitle = useRef(false);
   const videoSource = data?.sources[0]?.url;
   const [playerDimensions, setPlayerDimensions] = useState({
     width: 0,
     height: 0,
   });
+  const navigation = useNavigation();
 
   const [dimensions, setDimensions] = useState({
     width: Dimensions.get("screen").width,
@@ -70,7 +72,7 @@ const WatchEpisode = ({ route }) => {
     }),
     [isFullScreen, dimensions]
   );
-
+  const [toggleSettings, setToggleSettings] = useState(false);
   const videoSourceObject = useMemo(
     () => ({
       uri: videoSource,
@@ -122,13 +124,13 @@ const WatchEpisode = ({ route }) => {
     }
   };
 
-  useEffect(() => {
-    if (isFullScreen) {
-      SystemUI.setBackgroundColorAsync("#000"); // Makes bar black if visible
-    } else {
-      SystemUI.setBackgroundColorAsync("#000");
-    }
-  }, [isFullScreen]);
+  // useEffect(() => {
+  //   if (isFullScreen) {
+  //     SystemUI.setBackgroundColorAsync("#000"); // Makes bar black if visible
+  //   } else {
+  //     SystemUI.setBackgroundColorAsync("#000");
+  //   }
+  // }, [isFullScreen]);
 
   const handlePlaybackStateChange = useCallback((state) => {
     setPlaybackState(state);
@@ -164,6 +166,7 @@ const WatchEpisode = ({ route }) => {
       }
     };
     fetchData();
+    console.log(`subtitleindex: ${subtitleIndex}`);
   }, [id]);
 
   useEffect(() => {
@@ -200,10 +203,35 @@ const WatchEpisode = ({ route }) => {
   };
 
   const handleOverlayPress = () => {
-    if (!showOverlay) {
+    if (overlayVisible) {
       hideOverlay();
     } else {
       showOverlay();
+    }
+  };
+
+  const handleRewind = (farward) => {
+    if (farward) {
+      video.current.seek(currentTime + 10);
+    } else {
+      video.current.seek(currentTime - 10);
+    }
+  };
+  const handleBackPress = () => {
+    if (isFullScreen) {
+      setIsFullScreen(false);
+      // Exit Fullscreen mode
+      ScreenOrientation.lockAsync(
+        ScreenOrientation.OrientationLock.PORTRAIT_UP
+      );
+      setDimensions({
+        width: Dimensions.get("screen").width,
+        height: Dimensions.get("screen").height,
+      });
+
+      StatusBar.setHidden(false, "fade");
+    } else {
+      navigation.goBack();
     }
   };
 
@@ -212,7 +240,7 @@ const WatchEpisode = ({ route }) => {
       {loading && (
         <View
           style={{
-            height: 250,
+            aspectRatio: 16 / 9,
             alignItems: "center",
             justifyContent: "center",
           }}
@@ -248,7 +276,10 @@ const WatchEpisode = ({ route }) => {
                 controls={false}
                 resizeMode={"contain"}
                 source={videoSourceObject}
-                onProgress={({ currentTime }) => setCurrentTime(currentTime)}
+                onProgress={({ currentTime }) => {
+                  setCurrentTime((prev) => Math.floor(currentTime));
+                }}
+                progressUpdateInterval={1000}
                 onPlaybackStateChanged={handlePlaybackStateChange}
                 onLoad={({ duration, textTracks }) => {
                   setDuration(duration);
@@ -258,23 +289,16 @@ const WatchEpisode = ({ route }) => {
                       (track) => !track.language && !track.title
                     ).length || 0;
                   setNullSubtitleIndex(nullTrackCount);
+                  console.log(`duration: ${duration}`);
                 }}
                 style={videoStyle}
                 onTextTracks={(event) => {
-                  if (hasSetSubtitle.current) return;
-
                   const tracks = event.textTracks;
-                  const englishTrack = tracks.find((track) =>
-                    track.language?.toLowerCase().includes("english")
-                  );
-
-                  if (englishTrack) {
-                    setSelectedSubtitleTrack({
-                      type: "index",
-                      value: englishTrack.index,
-                    });
-                    hasSetSubtitle.current = true;
-                  }
+                  console.log(`subtitle index: ${subtitleIndex}`);
+                  setSelectedSubtitleTrack({
+                    type: "index",
+                    value: subtitleIndex,
+                  });
                 }}
                 selectedTextTrack={isVideoReady && selectedSubtitleTrack}
                 onError={(e) => console.error("Video error:", e)}
@@ -284,91 +308,141 @@ const WatchEpisode = ({ route }) => {
                   opacity: 0.8,
                 }}
                 poster={{ source: { uri: image }, resizeMode: "contain" }}
-                onFullscreenPlayerWillPresent={async () => {
-                  await ScreenOrientation.lockAsync(
-                    ScreenOrientation.OrientationLock.LANDSCAPE
-                  );
-                }}
-                onFullscreenPlayerWillDismiss={async () => {
-                  await ScreenOrientation.lockAsync(
-                    ScreenOrientation.OrientationLock.PORTRAIT_UP
-                  );
-                }}
               />
             </View>
             {overlayVisible && (
-              <View style={[styles.overlay, { zIndex: 1 }]}>
-                <Text
-                  numberOfLines={1}
-                  style={{
-                    fontSize: 18,
-                    color: "#fff",
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    padding: 5,
-                  }}
-                >
-                  Episode {number}: {title}
-                </Text>
-                <TouchableOpacity
-                  style={styles.button}
-                  onPress={() => handlePlayPress()}
-                >
-                  <Text style={styles.buttonText}>
-                    <Icon
-                      name={playbackState.isPlaying ? "pause" : "play-arrow"}
-                      size={40}
-                      color="#fff"
-                    />
-                  </Text>
-                </TouchableOpacity>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-evenly",
-                    alignItems: "center",
-                    height: 40,
-                    position: "absolute",
-                    bottom: 0,
-                  }}
-                >
-                  <Text style={styles.time}>
-                    {formatTime(isSeeking ? seekTime : currentTime)}
-                  </Text>
-                  <Slider
-                    style={styles.slider}
-                    minimumValue={0}
-                    maximumValue={duration}
-                    value={currentTime}
-                    minimumTrackTintColor="#32a88b"
-                    maximumTrackTintColor="#888"
-                    thumbTintColor="#32a88b"
-                    onValueChange={(value) => {
-                      setIsSeeking(true);
-                      setSeekTime(value);
+              <Animated.View
+                style={[styles.overlay, { opacity: overlayOpacity }]}
+              >
+                <View style={[styles.overlay, { zIndex: 1 }]}>
+                  <View
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      padding: 5,
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      width: "100%",
                     }}
-                    onSlidingStart={() => {
-                      setIsSeeking(true);
-                    }}
-                    onSlidingComplete={(value) => {
-                      handleSeek(value);
-                      setIsSeeking(false);
-                    }} // resume playback after seeking
-                  />
-
-                  <Text style={styles.time}>{formatTime(duration)}</Text>
-                  <TouchableOpacity onPress={() => handleFullscreenToggle()}>
-                    <Text>
+                  >
+                    <TouchableOpacity
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        gap: 5,
+                      }}
+                      onPress={() => handleBackPress()}
+                    >
                       <Icon
-                        name={isFullScreen ? "fullscreen-exit" : "fullscreen"}
-                        size={30}
+                        name="keyboard-backspace"
                         color={"#fff"}
+                        size={30}
                       />
-                    </Text>
-                  </TouchableOpacity>
+                      <Text
+                        numberOfLines={1}
+                        style={{
+                          fontSize: 15,
+                          color: "#fff",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        Episode {number}: {title}
+                      </Text>
+                    </TouchableOpacity>
+                    {!isFullScreen && (
+                      <TouchableOpacity
+                        style={styles.button}
+                        onPress={() => setToggleSettings(!toggleSettings)}
+                      >
+                        <Text style={styles.buttonText}>
+                          <Icon name={"settings"} size={25} color="#fff" />
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                  <View style={{ flexDirection: "row", gap: 20 }}>
+                    <TouchableOpacity
+                      style={styles.button}
+                      onPress={() => handleRewind(false)}
+                    >
+                      <Text style={styles.buttonText}>
+                        <Icon name={"replay-10"} size={45} color="#fff" />
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.button}
+                      onPress={() => handlePlayPress()}
+                    >
+                      <Text style={styles.buttonText}>
+                        <Icon
+                          name={
+                            playbackState.isPlaying ? "pause" : "play-arrow"
+                          }
+                          size={45}
+                          color="#fff"
+                        />
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.button}
+                      onPress={() => handleRewind(true)}
+                    >
+                      <Text style={styles.buttonText}>
+                        <Icon name={"forward-10"} size={45} color="#fff" />
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-evenly",
+                      alignItems: "center",
+                      height: 40,
+                      bottom: 0,
+                      width: "100%",
+                      position: "absolute",
+                    }}
+                  >
+                    <View>
+                      <Text style={styles.time} key={currentTime}>
+                        {formatTime(currentTime)}
+                      </Text>
+                    </View>
+                    <Slider
+                      style={styles.slider}
+                      minimumValue={0}
+                      maximumValue={duration}
+                      value={currentTime}
+                      minimumTrackTintColor="#32a88b"
+                      maximumTrackTintColor="#888"
+                      thumbTintColor="#32a88b"
+                      onValueChange={(value) => {
+                        setIsSeeking(true);
+                        setSeekTime(value);
+                      }}
+                      onSlidingStart={() => {
+                        setIsSeeking(true);
+                      }}
+                      onSlidingComplete={(value) => {
+                        handleSeek(value);
+                        setIsSeeking(false);
+                      }} // resume playback after seeking
+                    />
+
+                    <Text style={styles.time}>{formatTime(duration)}</Text>
+                    <TouchableOpacity onPress={() => handleFullscreenToggle()}>
+                      <Text>
+                        <Icon
+                          name={isFullScreen ? "fullscreen-exit" : "fullscreen"}
+                          size={30}
+                          color={"#fff"}
+                        />
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
-              </View>
+              </Animated.View>
             )}
           </View>
         </TouchableWithoutFeedback>
@@ -378,6 +452,15 @@ const WatchEpisode = ({ route }) => {
       <View style={{ paddingVertical: 10 }}>
         <EpisodeList ep={ep} />
       </View>
+      {isVideoReady && (
+        <VideoSettings
+          toggleSettings={toggleSettings}
+          setToggleSettings={setToggleSettings}
+          setSubtitleIndex={setSubtitleIndex}
+          subtileTracks={subtitleTracks}
+          subtitleIndex={subtitleIndex}
+        />
+      )}
     </View>
   );
 };
@@ -392,6 +475,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "rgba(0, 0, 0, 0.3)", // Optional dim effect
+    width: "100%",
   },
   buttonText: {
     color: "#fff",
@@ -402,6 +486,8 @@ const styles = StyleSheet.create({
   },
   time: {
     color: "white",
+    fontSize: 15,
+    zIndex: 999,
   },
 });
 
