@@ -1,10 +1,12 @@
 import {
   ActivityIndicator,
+  Animated,
   Dimensions,
   StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from "react-native";
 import Video from "react-native-video";
@@ -34,10 +36,12 @@ const WatchEpisode = ({ route }) => {
     type: "index",
     value: 0,
   });
+  const [overlayVisible, setOverlayVisible] = useState(true);
   const [isVideoReady, setIsVideoReady] = useState(false);
   const [NullSubtitleIndex, setNullSubtitleIndex] = useState(0);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
+  const timeoutRef = useRef(null);
   const hasSetSubtitle = useRef(false);
   const videoSource = data?.sources[0]?.url;
   const [playerDimensions, setPlayerDimensions] = useState({
@@ -53,6 +57,7 @@ const WatchEpisode = ({ route }) => {
     width: 0,
     height: 0,
   });
+  const overlayOpacity = useRef(new Animated.Value(0)).current;
   const videoStyle = useMemo(
     () => ({
       width: isFullScreen ? Dimensions.get("window").height : "100%",
@@ -79,6 +84,7 @@ const WatchEpisode = ({ route }) => {
     }),
     [videoSource, subtitleTracks]
   );
+
   const handlePlayPress = useCallback(() => {
     if (video.current) {
       if (playbackState.isPlaying) {
@@ -88,6 +94,7 @@ const WatchEpisode = ({ route }) => {
       }
     }
   }, [playbackState.isPlaying]);
+
   const handleFullscreenToggle = () => {
     setIsFullScreen(!isFullScreen);
 
@@ -111,7 +118,6 @@ const WatchEpisode = ({ route }) => {
         height: Dimensions.get("screen").height,
       });
 
-      // Show StatusBar again (automatically reappears on swipe down)
       StatusBar.setHidden(false, "fade");
     }
   };
@@ -128,6 +134,7 @@ const WatchEpisode = ({ route }) => {
     setPlaybackState(state);
     console.log("Playback State:", state);
   }, []);
+
   const handleSeek = (time) => {
     video.current.seek(time);
     setCurrentTime(time);
@@ -164,7 +171,42 @@ const WatchEpisode = ({ route }) => {
       setSubtitleTracks(data?.subtitles);
       console.log("Subtitle Tracks: ", data?.subtitles);
     }
+    showOverlay();
   }, [data?.subtitles]);
+
+  const showOverlay = () => {
+    setOverlayVisible(true);
+    Animated.timing(overlayOpacity, {
+      toValue: 1,
+      duration: 500, // Fade-in duration
+      useNativeDriver: true,
+    }).start();
+
+    // Clear any existing timeout and set a new one
+    clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(() => {
+      hideOverlay(); // Hide the overlay after 3 seconds of inactivity
+    }, 3000); // 3 seconds timeout (adjust as needed)
+  };
+
+  const hideOverlay = () => {
+    Animated.timing(overlayOpacity, {
+      toValue: 0,
+      duration: 500, // Fade-out duration
+      useNativeDriver: true,
+    }).start(() => {
+      setOverlayVisible(false); // Set visible state to false after fade-out
+    });
+  };
+
+  const handleOverlayPress = () => {
+    if (!showOverlay) {
+      hideOverlay();
+    } else {
+      showOverlay();
+    }
+  };
+
   return (
     <View style={styles.container}>
       {loading && (
@@ -180,147 +222,156 @@ const WatchEpisode = ({ route }) => {
       )}
 
       {videoSource ? (
-        <View
-          style={{
-            backgroundColor: "#000",
-            width: isFullScreen ? dimensions.height : "100%",
-            height: isFullScreen ? dimensions.width : undefined,
-            aspectRatio: isFullScreen ? undefined : 16 / 9,
-          }}
-        >
+        <TouchableWithoutFeedback onPress={handleOverlayPress}>
           <View
-            style={{ flex: 1 }}
-            onLayout={(e) => {
-              const { width, height } = e.nativeEvent.layout;
-              setPlayerDimensions({ width, height });
-              setWrapperDimensions({
-                width,
-                height,
-              });
+            style={{
+              backgroundColor: "#000",
+              width: isFullScreen ? dimensions.height : "100%",
+              height: isFullScreen ? dimensions.width : undefined,
+              aspectRatio: isFullScreen ? undefined : 16 / 9,
             }}
           >
-            <Video
-              ref={video}
-              allowsFullscreen
-              controls={false}
-              resizeMode={"contain"}
-              source={videoSourceObject}
-              onProgress={({ currentTime }) => setCurrentTime(currentTime)}
-              onPlaybackStateChanged={handlePlaybackStateChange}
-              onLoad={({ duration, textTracks }) => {
-                setDuration(duration);
-                setIsVideoReady(true);
-                const nullTrackCount =
-                  textTracks?.filter((track) => !track.language && !track.title)
-                    .length || 0;
-                setNullSubtitleIndex(nullTrackCount);
-              }}
-              style={videoStyle}
-              onTextTracks={(event) => {
-                if (hasSetSubtitle.current) return;
-
-                const tracks = event.textTracks;
-                const englishTrack = tracks.find((track) =>
-                  track.language?.toLowerCase().includes("english")
-                );
-
-                if (englishTrack) {
-                  setSelectedSubtitleTrack({
-                    type: "index",
-                    value: englishTrack.index,
-                  });
-                  hasSetSubtitle.current = true;
-                }
-              }}
-              selectedTextTrack={isVideoReady && selectedSubtitleTrack}
-              onError={(e) => console.error("Video error:", e)}
-              subtitleStyle={{ paddingBottom: 25, fontSize: 15, opacity: 0.8 }}
-              poster={{ source: { uri: image }, resizeMode: "contain" }}
-              onFullscreenPlayerWillPresent={async () => {
-                await ScreenOrientation.lockAsync(
-                  ScreenOrientation.OrientationLock.LANDSCAPE
-                );
-              }}
-              onFullscreenPlayerWillDismiss={async () => {
-                await ScreenOrientation.lockAsync(
-                  ScreenOrientation.OrientationLock.PORTRAIT_UP
-                );
-              }}
-            />
-          </View>
-          <View style={[styles.overlay, { zIndex: 1 }]}>
-            <Text
-              numberOfLines={1}
-              style={{
-                fontSize: 18,
-                color: "#fff",
-                position: "absolute",
-                top: 0,
-                left: 0,
-                padding: 5,
-              }}
-            >
-              Episode {number}: {title}
-            </Text>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => handlePlayPress()}
-            >
-              <Text style={styles.buttonText}>
-                <Icon
-                  name={playbackState.isPlaying ? "pause" : "play-arrow"}
-                  size={40}
-                  color="#fff"
-                />
-              </Text>
-            </TouchableOpacity>
             <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-evenly",
-                alignItems: "center",
-                height: 40,
-                position: "absolute",
-                bottom: 0,
+              style={{ flex: 1 }}
+              onLayout={(e) => {
+                const { width, height } = e.nativeEvent.layout;
+                setPlayerDimensions({ width, height });
+                setWrapperDimensions({
+                  width,
+                  height,
+                });
               }}
             >
-              <Text style={styles.time}>
-                {formatTime(isSeeking ? seekTime : currentTime)}
-              </Text>
-              <Slider
-                style={styles.slider}
-                minimumValue={0}
-                maximumValue={duration}
-                value={currentTime}
-                minimumTrackTintColor="#32a88b"
-                maximumTrackTintColor="#888"
-                thumbTintColor="#32a88b"
-                onValueChange={(value) => {
-                  setIsSeeking(true);
-                  setSeekTime(value);
+              <Video
+                ref={video}
+                allowsFullscreen
+                controls={false}
+                resizeMode={"contain"}
+                source={videoSourceObject}
+                onProgress={({ currentTime }) => setCurrentTime(currentTime)}
+                onPlaybackStateChanged={handlePlaybackStateChange}
+                onLoad={({ duration, textTracks }) => {
+                  setDuration(duration);
+                  setIsVideoReady(true);
+                  const nullTrackCount =
+                    textTracks?.filter(
+                      (track) => !track.language && !track.title
+                    ).length || 0;
+                  setNullSubtitleIndex(nullTrackCount);
                 }}
-                onSlidingStart={() => {
-                  setIsSeeking(true);
-                }}
-                onSlidingComplete={(value) => {
-                  handleSeek(value);
-                  setIsSeeking(false);
-                }} // resume playback after seeking
-              />
+                style={videoStyle}
+                onTextTracks={(event) => {
+                  if (hasSetSubtitle.current) return;
 
-              <Text style={styles.time}>{formatTime(duration)}</Text>
-              <TouchableOpacity onPress={() => handleFullscreenToggle()}>
-                <Text>
-                  <Icon
-                    name={isFullScreen ? "fullscreen-exit" : "fullscreen"}
-                    size={30}
-                    color={"#fff"}
-                  />
-                </Text>
-              </TouchableOpacity>
+                  const tracks = event.textTracks;
+                  const englishTrack = tracks.find((track) =>
+                    track.language?.toLowerCase().includes("english")
+                  );
+
+                  if (englishTrack) {
+                    setSelectedSubtitleTrack({
+                      type: "index",
+                      value: englishTrack.index,
+                    });
+                    hasSetSubtitle.current = true;
+                  }
+                }}
+                selectedTextTrack={isVideoReady && selectedSubtitleTrack}
+                onError={(e) => console.error("Video error:", e)}
+                subtitleStyle={{
+                  paddingBottom: 25,
+                  fontSize: 15,
+                  opacity: 0.8,
+                }}
+                poster={{ source: { uri: image }, resizeMode: "contain" }}
+                onFullscreenPlayerWillPresent={async () => {
+                  await ScreenOrientation.lockAsync(
+                    ScreenOrientation.OrientationLock.LANDSCAPE
+                  );
+                }}
+                onFullscreenPlayerWillDismiss={async () => {
+                  await ScreenOrientation.lockAsync(
+                    ScreenOrientation.OrientationLock.PORTRAIT_UP
+                  );
+                }}
+              />
             </View>
+            {overlayVisible && (
+              <View style={[styles.overlay, { zIndex: 1 }]}>
+                <Text
+                  numberOfLines={1}
+                  style={{
+                    fontSize: 18,
+                    color: "#fff",
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    padding: 5,
+                  }}
+                >
+                  Episode {number}: {title}
+                </Text>
+                <TouchableOpacity
+                  style={styles.button}
+                  onPress={() => handlePlayPress()}
+                >
+                  <Text style={styles.buttonText}>
+                    <Icon
+                      name={playbackState.isPlaying ? "pause" : "play-arrow"}
+                      size={40}
+                      color="#fff"
+                    />
+                  </Text>
+                </TouchableOpacity>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-evenly",
+                    alignItems: "center",
+                    height: 40,
+                    position: "absolute",
+                    bottom: 0,
+                  }}
+                >
+                  <Text style={styles.time}>
+                    {formatTime(isSeeking ? seekTime : currentTime)}
+                  </Text>
+                  <Slider
+                    style={styles.slider}
+                    minimumValue={0}
+                    maximumValue={duration}
+                    value={currentTime}
+                    minimumTrackTintColor="#32a88b"
+                    maximumTrackTintColor="#888"
+                    thumbTintColor="#32a88b"
+                    onValueChange={(value) => {
+                      setIsSeeking(true);
+                      setSeekTime(value);
+                    }}
+                    onSlidingStart={() => {
+                      setIsSeeking(true);
+                    }}
+                    onSlidingComplete={(value) => {
+                      handleSeek(value);
+                      setIsSeeking(false);
+                    }} // resume playback after seeking
+                  />
+
+                  <Text style={styles.time}>{formatTime(duration)}</Text>
+                  <TouchableOpacity onPress={() => handleFullscreenToggle()}>
+                    <Text>
+                      <Icon
+                        name={isFullScreen ? "fullscreen-exit" : "fullscreen"}
+                        size={30}
+                        color={"#fff"}
+                      />
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            )}
           </View>
-        </View>
+        </TouchableWithoutFeedback>
       ) : (
         <View></View>
       )}
