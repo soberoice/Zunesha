@@ -7,21 +7,22 @@ import {
   View,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-const AnimeList = React.lazy(()=> import("../components/AnimeList"));
-
+import Pagination from "../components/Pagination";
+const AnimeList = React.lazy(() => import("../components/AnimeList"));
 
 const Watchscreen = () => {
   const [active, setActive] = useState("TV");
   const tags = ["TV", "Movies", "Specials", "ONA", "OVA"];
   const [data, setData] = useState();
   const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState();
   useEffect(() => {
     const fetchData = async () => {
       try {
         setData({});
         setLoading(true);
         const response = await fetch(
-          `https://consapi-chi.vercel.app/anime/zoro/${active.toLowerCase()}`
+          `https://consapi-chi.vercel.app/anime/zoro/${active.toLowerCase()}?page=${page}`
         );
         const res = await response.json();
         setData(res.results);
@@ -49,7 +50,6 @@ const Watchscreen = () => {
               }}
             >
               {tag}
-              {console.log(tag)}
             </Text>
             {active === tag && (
               <Text style={{ color: "#32a88b", fontWeight: "bold" }}>__</Text>
@@ -62,6 +62,7 @@ const Watchscreen = () => {
       ) : (
         <ScrollView>
           <AnimeList data={data} />
+          <Pagination page={page} />
         </ScrollView>
       )}
     </View>

@@ -10,39 +10,39 @@ const HorizontalAnimeList = ({ data }) => {
   return (
     <View style={styles.container}>
       {data &&
-        data.map((item, index) => (
+        data?.map((item, index) => (
           <TouchableOpacity
-            key={item.id}
-            onPress={() => navigation.navigate("Details", { id: item.id })}
+            key={item?.id}
+            onPress={() => navigation.navigate("Details", { id: item?.id })}
             style={styles.itemContainer}
           >
-            <Image style={styles.image} source={{ uri: item.image }} />
+            <Image style={styles.image} source={{ uri: item?.image }} />
             <View style={styles.desContainer}>
               <Text numberOfLines={2} style={styles.text}>
-                {item.title}
+                {item?.title}
               </Text>
               <View style={{ flexDirection: "row", gap: 5 }}>
-                <Text style={styles.desIcon}> {item.type}</Text>
-                {item.duration && (
-                  <Text style={styles.desIcon}> {item.duration}</Text>
+                <Text style={styles.desIcon}> {item?.type}</Text>
+                {item?.duration && (
+                  <Text style={styles.desIcon}> {item?.duration}</Text>
                 )}
-                {item.sub ? (
+                {item && (
                   <Text style={styles.desIcon}>
-                    <Icon name="closed-caption" /> {item.sub}
-                  </Text>
-                ) : (
-                  <Text style={styles.desIcon}>
-                    <Icon name="closed-caption" /> {item.totalEpisodes}
+                    <Icon name="closed-caption" />
+                    {item?.sub || item?.totalEpisodes}
                   </Text>
                 )}
-                {item.dub > 0 && (
+                {item?.dub > 0 && (
                   <Text style={styles.desIcon}>
-                    <Icon name="mic" /> {item.dub}
+                    <Icon name="mic" /> {item?.dub}
                   </Text>
                 )}
               </View>
               {item && (
-                <TouchableOpacity onPress={() => addToWatchList(item)}>
+                <TouchableOpacity
+                  style={{ width: 55 }}
+                  onPress={() => addToWatchList(item)}
+                >
                   {inWatchList(item?.id) ? (
                     <View
                       style={{

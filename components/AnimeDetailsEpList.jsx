@@ -39,12 +39,10 @@ const AnimeDetailsEpList = ({ ep, image }) => {
           onPress={() =>
             navigation.navigate("watchepisode", {
               id: item?.id,
-
               ep: ep,
-
               title: item?.title,
-
               number: item?.number,
+              cover: image,
             })
           }
         >
@@ -108,7 +106,7 @@ const AnimeDetailsEpList = ({ ep, image }) => {
 
                     number: item.number,
 
-                    cover: image
+                    cover: image,
                   })
                 }
               >
@@ -158,7 +156,7 @@ const styles = StyleSheet.create({
   scrollContainer: {
     overflow: "scroll",
     marginVertical: 10,
-    paddingHorizontal: 15
+    paddingHorizontal: 15,
   },
 
   btn: {
@@ -181,7 +179,7 @@ const styles = StyleSheet.create({
     width: 150,
     height: 100,
     borderRadius: 5,
-    opacity: 0.8
+    opacity: 0.8,
   },
   playbtn: {
     position: "absolute",

@@ -18,15 +18,22 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import { useMemo } from "react";
 import VideoSettings from "../components/VideoSettings";
 import { useNavigation } from "expo-router";
-// import * as SystemUI from "expo-system-ui";
+import * as SystemUI from "expo-system-ui";
 
+function usePrevious(value) {
+  const ref = useRef();
+  useEffect(() => {
+    ref.current = value;
+  }, [value]);
+  return ref.current;
+}
 const WatchEpisode = ({ route }) => {
-  const { id, ep, title, number, image } = route.params;
+  const { id, ep, title, number, cover } = route.params;
   const [data, setData] = useState();
   const [loading, setLoading] = useState(false);
   const video = useRef(null);
   const [subtitleTracks, setSubtitleTracks] = useState([]);
-  const [subtitleIndex, setSubtitleIndex] = useState(2);
+  const [subtitleIndex, setSubtitleIndex] = useState(null);
   const [isSeeking, setIsSeeking] = useState(false);
   const [seekTime, setSeekTime] = useState(0);
   const [isFullScreen, setIsFullScreen] = useState(false);
@@ -45,6 +52,7 @@ const WatchEpisode = ({ route }) => {
   const [currentTime, setCurrentTime] = useState(0);
   const timeoutRef = useRef(null);
   const videoSource = data?.sources[0]?.url;
+  const [isMute, setIsMute] = useState(false);
   const [playerDimensions, setPlayerDimensions] = useState({
     width: 0,
     height: 0,
@@ -64,7 +72,7 @@ const WatchEpisode = ({ route }) => {
     () => ({
       width: isFullScreen ? Dimensions.get("window").height : "100%",
       height: isFullScreen ? dimensions.width : undefined,
-      aspectRatio: isFullScreen ? undefined : 16 / 9, // Default 16:9 aspect ratio in normal mode
+      aspectRatio: isFullScreen ? undefined : 16 / 12, // Default 16:9 aspect ratio in normal mode
       backgroundColor: "black",
       top: 0,
       left: 0,
@@ -86,7 +94,7 @@ const WatchEpisode = ({ route }) => {
     }),
     [videoSource, subtitleTracks]
   );
-
+  const prevSubIndex = usePrevious(subtitleIndex);
   const handlePlayPress = useCallback(() => {
     if (video.current) {
       if (playbackState.isPlaying) {
@@ -124,13 +132,13 @@ const WatchEpisode = ({ route }) => {
     }
   };
 
-  // useEffect(() => {
-  //   if (isFullScreen) {
-  //     SystemUI.setBackgroundColorAsync("#000"); // Makes bar black if visible
-  //   } else {
-  //     SystemUI.setBackgroundColorAsync("#000");
-  //   }
-  // }, [isFullScreen]);
+  useEffect(() => {
+    if (isFullScreen) {
+      SystemUI.setBackgroundColorAsync("#000"); // Makes bar black if visible
+    } else {
+      SystemUI.setBackgroundColorAsync("#000");
+    }
+  }, [isFullScreen]);
 
   const handlePlaybackStateChange = useCallback((state) => {
     setPlaybackState(state);
@@ -148,26 +156,40 @@ const WatchEpisode = ({ route }) => {
     const secs = Math.floor(seconds % 60);
     return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
   };
+  const fetchData = async () => {
+    try {
+      setIsVideoReady(false);
+      setIsMute(false);
+      setData();
+      setLoading(true);
+      const response = await fetch(
+        `https://consapi-chi.vercel.app/anime/zoro/watch/${id}`
+      );
+      const res = await response.json();
+      setData(res);
+    } catch (error) {
+      console.error("Fetch error:", error);
+    } finally {
+      setLoading(false);
+      console.log(data);
+    }
+  };
+
+  const [englishIndex, setEnglishIndex] = useState();
+  useEffect(() => {
+    fetchData();
+    setSubtitleIndex(undefined);
+  }, [id]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setData();
-        setLoading(true);
-        const response = await fetch(
-          `https://consapi-chi.vercel.app/anime/zoro/watch/${id}`
-        );
-        const res = await response.json();
-        setData(res);
-      } catch (error) {
-        console.error("Fetch error:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-    console.log(`subtitleindex: ${subtitleIndex}`);
-  }, [id]);
+    if (
+      prevSubIndex !== englishIndex &&
+      prevSubIndex !== subtitleIndex &&
+      prevSubIndex !== undefined
+    ) {
+      fetchData();
+    }
+  }, [subtitleIndex]);
 
   useEffect(() => {
     if (data?.subtitles && data?.subtitles?.length > 0) {
@@ -234,29 +256,54 @@ const WatchEpisode = ({ route }) => {
       navigation.goBack();
     }
   };
+  const handleVolumePress = () => {
+    const newMuteState = !isMute;
+    console.log("Toggling mute. New state: ", newMuteState);
+    setIsMute(newMuteState);
+
+    if (video.current) {
+      video.current.setVolume(newMuteState ? 0.0 : 1.0);
+    }
+  };
 
   return (
     <View style={styles.container}>
+      {!isVideoReady && (
+        <View
+          style={{
+            aspectRatio: 16 / 12,
+            position: "absolute",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1,
+            width: "100%",
+          }}
+        >
+          {console.log("video Sourse", videoSource)}
+          <ActivityIndicator color="#32a88b" size={50} />
+        </View>
+      )}
       {loading && (
         <View
           style={{
-            aspectRatio: 16 / 9,
+            aspectRatio: 16 / 12,
             alignItems: "center",
             justifyContent: "center",
+            zIndex: 999,
+            width: "100%",
           }}
         >
           <ActivityIndicator color="#32a88b" size={50} />
         </View>
       )}
-
       {videoSource ? (
         <TouchableWithoutFeedback onPress={handleOverlayPress}>
           <View
             style={{
               backgroundColor: "#000",
-              width: isFullScreen ? dimensions.height : "100%",
+              width: isFullScreen ? dimensions.height - "10%" : "100%",
               height: isFullScreen ? dimensions.width : undefined,
-              aspectRatio: isFullScreen ? undefined : 16 / 9,
+              aspectRatio: isFullScreen ? undefined : 16 / 12,
             }}
           >
             <View
@@ -290,31 +337,44 @@ const WatchEpisode = ({ route }) => {
                     ).length || 0;
                   setNullSubtitleIndex(nullTrackCount);
                   console.log(`duration: ${duration}`);
+                  console.log("cover: ", cover);
                 }}
                 style={videoStyle}
                 onTextTracks={(event) => {
                   const tracks = event.textTracks;
+                  const englishTrack = tracks.find((track) =>
+                    track.language?.toLowerCase().includes("english")
+                  );
+                  if (subtitleIndex === undefined) {
+                    setSubtitleIndex(englishTrack?.index);
+                    setEnglishIndex(englishTrack?.index);
+                  }
+                  console.log(`english: ${englishTrack?.index}`);
                   console.log(`subtitle index: ${subtitleIndex}`);
-                  setSelectedSubtitleTrack({
-                    type: "index",
-                    value: subtitleIndex,
-                  });
                 }}
-                selectedTextTrack={isVideoReady && selectedSubtitleTrack}
+                selectedTextTrack={{
+                  type: "index",
+                  value: subtitleIndex,
+                }}
                 onError={(e) => console.error("Video error:", e)}
                 subtitleStyle={{
                   paddingBottom: 25,
                   fontSize: 15,
                   opacity: 0.8,
                 }}
-                poster={{ source: { uri: image }, resizeMode: "contain" }}
+                poster={{
+                  source: { uri: cover },
+                  resizeMode: "cover",
+                }}
               />
             </View>
             {overlayVisible && (
               <Animated.View
                 style={[styles.overlay, { opacity: overlayOpacity }]}
               >
+                {/* CONTROLES OVERLAY */}
                 <View style={[styles.overlay, { zIndex: 1 }]}>
+                  {/* TOP OF CONTROLE NAME AND SETTINGS */}
                   <View
                     style={{
                       position: "absolute",
@@ -323,8 +383,10 @@ const WatchEpisode = ({ route }) => {
                       flexDirection: "row",
                       justifyContent: "space-between",
                       width: "100%",
+                      alignItems: "center",
                     }}
                   >
+                    {/* NAME */}
                     <TouchableOpacity
                       style={{
                         display: "flex",
@@ -345,21 +407,25 @@ const WatchEpisode = ({ route }) => {
                           fontSize: 15,
                           color: "#fff",
                           fontWeight: "bold",
+                          width: "80%",
                         }}
                       >
                         Episode {number}: {title}
                       </Text>
                     </TouchableOpacity>
-                    {!isFullScreen && (
-                      <TouchableOpacity
-                        style={styles.button}
-                        onPress={() => setToggleSettings(!toggleSettings)}
-                      >
-                        <Text style={styles.buttonText}>
-                          <Icon name={"settings"} size={25} color="#fff" />
-                        </Text>
-                      </TouchableOpacity>
-                    )}
+                    <View style={{ flexDirection: "row", gap: 10 }}>
+                      {/* SETTINGS */}
+                      {!isFullScreen && (
+                        <TouchableOpacity
+                          style={styles.button}
+                          onPress={() => setToggleSettings(!toggleSettings)}
+                        >
+                          <Text style={styles.buttonText}>
+                            <Icon name={"settings"} size={25} color="#fff" />
+                          </Text>
+                        </TouchableOpacity>
+                      )}
+                    </View>
                   </View>
                   <View style={{ flexDirection: "row", gap: 20 }}>
                     <TouchableOpacity
@@ -396,7 +462,7 @@ const WatchEpisode = ({ route }) => {
                   <View
                     style={{
                       flexDirection: "row",
-                      justifyContent: "space-evenly",
+                      justifyContent: "space-between",
                       alignItems: "center",
                       height: 40,
                       bottom: 0,
@@ -416,7 +482,7 @@ const WatchEpisode = ({ route }) => {
                       value={currentTime}
                       minimumTrackTintColor="#32a88b"
                       maximumTrackTintColor="#888"
-                      thumbTintColor="#32a88b"
+                      thumbTintColor="#fff"
                       onValueChange={(value) => {
                         setIsSeeking(true);
                         setSeekTime(value);
@@ -429,8 +495,15 @@ const WatchEpisode = ({ route }) => {
                         setIsSeeking(false);
                       }} // resume playback after seeking
                     />
-
                     <Text style={styles.time}>{formatTime(duration)}</Text>
+                    {/* MUTE  */}
+                    <TouchableOpacity onPress={() => handleVolumePress()}>
+                      <Icon
+                        name={!isMute ? "volume-up" : "volume-off"}
+                        color={"#fff"}
+                        size={25}
+                      />
+                    </TouchableOpacity>
                     <TouchableOpacity onPress={() => handleFullscreenToggle()}>
                       <Text>
                         <Icon
@@ -450,7 +523,7 @@ const WatchEpisode = ({ route }) => {
         <View></View>
       )}
       <View style={{ paddingVertical: 10 }}>
-        <EpisodeList ep={ep} />
+        <EpisodeList ep={ep} image={cover} />
       </View>
       {isVideoReady && (
         <VideoSettings
@@ -476,12 +549,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "rgba(0, 0, 0, 0.3)", // Optional dim effect
     width: "100%",
+    zIndex: 2,
   },
   buttonText: {
     color: "#fff",
   },
   slider: {
-    width: "70%",
+    width: "60%",
     height: 40,
   },
   time: {

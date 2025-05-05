@@ -26,7 +26,6 @@
         <category android:name="android.intent.category.BROWSABLE"/>
         <data android:scheme="anisober"/>
         <data android:scheme="com.anonymous.app"/>
-        <data android:scheme="exp+anisober"/>
         <data android:scheme="exp+app"/>
       </intent-filter>
     </activity>

@@ -47,7 +47,7 @@ const Homepage = () => {
     StatusBar.setHidden(false);
     fetchData();
   }, []);
-  
+
   if (loading) {
     return (
       <View style={styles.container}>
@@ -94,7 +94,7 @@ const Homepage = () => {
                   See more
                 </Text>
               </View>
-              <Slidinglist data={topAiring} limit={10} />
+              <Slidinglist start={0} data={topAiring} limit={10} />
             </View>
             <View
               style={{

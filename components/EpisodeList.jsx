@@ -1,5 +1,5 @@
 import {
-  InputAccessoryView,
+  KeyboardAvoidingView,
   ScrollView,
   StyleSheet,
   Text,
@@ -8,39 +8,51 @@ import {
   View,
 } from "react-native";
 import React, { useState } from "react";
-import { Picker } from "@react-native-picker/picker";
 import { useNavigation } from "expo-router";
+import DropDownPicker from "react-native-dropdown-picker";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import Icon from "react-native-vector-icons/MaterialIcons";
 
-// Helper function to split array into chunks of 50
+// Helper function to split array into chunks of 40
 const splitIntoChunks = (array) => {
   const result = [];
-  for (let i = 0; i < array.length; i += 50) {
-    result.push(array.slice(i, i + 50));
+  for (let i = 0; i < array.length; i += 100) {
+    result.push(array.slice(i, i + 100));
   }
   return result;
 };
 
-const EpisodeList = ({ ep }) => {
+const EpisodeList = ({ ep, image }) => {
   const navigation = useNavigation();
-  const chunks = splitIntoChunks(ep); // Split the episodes into chunks
-  const [epList, setEpList] = useState(1); // State to store selected chunk
+  const chunks = splitIntoChunks(ep);
+  const [epList, setEpList] = useState(1);
   const [searchInput, setSearchInput] = useState("");
+  const [open, setOpen] = useState(false);
+  const searchIcon = <Icon name="search" size={20} color={"#32a88b"} />;
+  const page = <Icon name="list" size={20} color={"#32a88b"} />;
+  const dropdownItems = chunks.map((chunk, index) => ({
+    label: `${chunk[0]?.number}-${chunk[chunk?.length - 1]?.number}`,
+    value: index + 1,
+  }));
 
   function search() {
     const filteredEp = ep.filter(
       (episode) => episode.number.toString() === searchInput
     );
-    console.log(filteredEp.number);
+
+    if (!filteredEp[0]) return null;
+
     return (
       <TouchableOpacity
         style={styles.btn}
-        key={index}
+        key={filteredEp[0].id}
         onPress={() =>
           navigation.navigate("watchepisode", {
             id: filteredEp[0]?.id,
             ep: ep,
-            tilte: filteredEp[0].title,
+            title: filteredEp[0].title,
             number: filteredEp[0].number,
+            cover: image,
           })
         }
       >
@@ -48,31 +60,90 @@ const EpisodeList = ({ ep }) => {
       </TouchableOpacity>
     );
   }
+
   return (
-    <View>
-      <View style={{ flexDirection: "row" }}>
-        <Picker
-          dropdownIconColor="#32a88b"
-          selectedValue={epList}
-          onValueChange={(itemValue) => setEpList(itemValue)}
-          style={styles.picker}
-          mode="dropdown"
+    <View style={{ width: "100%" }}>
+      <Text
+        style={{
+          fontSize: 18,
+          fontWeight: "bold",
+          color: "#fff",
+          paddingLeft: 10,
+        }}
+      >
+        List Of Episodes
+      </Text>
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "center",
+          marginVertical: 15,
+          width: "100%",
+          alignItems: "center",
+        }}
+      >
+        <View
+          style={{
+            width: "35%",
+            flexDirection: "row",
+            alignItems: "center",
+          }}
         >
-          {chunks.map((item, index) => {
-            return (
-              <Picker.Item label={index + 1} value={index + 1} key={index} />
-            );
-          })}
-        </Picker>
-        <TextInput
-          onChangeText={(text) => setSearchInput(text)}
-          placeholder="Search Episode"
-          style={styles.searchBar}
-        />
+          {page}
+          <DropDownPicker
+            open={open}
+            value={epList}
+            items={dropdownItems}
+            setOpen={setOpen}
+            setValue={setEpList}
+            setItems={() => {}}
+            style={{
+              backgroundColor: "#000",
+              borderColor: "transparent",
+              width: "80%",
+            }}
+            textStyle={{
+              color: "#32a88b",
+            }}
+            dropDownContainerStyle={{
+              backgroundColor: "#001",
+              borderColor: "transparent",
+              width: "80%",
+            }}
+            listItemLabelStyle={{
+              color: "#32a88b",
+            }}
+            arrowIconStyle={{
+              tintColor: "#32a88b",
+            }}
+            selectedItemContainerStyle={{
+              color: "#32a88b",
+            }}
+          />
+        </View>
+        <View
+          style={{
+            width: "50%",
+            flexDirection: "row",
+            borderWidth: 1,
+            alignItems: "center",
+            borderRadius: 5,
+            gap: 2,
+          }}
+        >
+          <Text>{searchIcon}</Text>
+          <TextInput
+            placeholderTextColor={"#32a88b"}
+            onChangeText={(text) => setSearchInput(text)}
+            placeholder={`Search Episode`}
+            style={styles.searchBar}
+          />
+        </View>
       </View>
+
       <ScrollView
         style={styles.scrollView}
-        contentContainerStyle={styles.container}
+        contentContainerStyle={[styles.container, { paddingBottom: "100%" }]}
       >
         {searchInput
           ? search()
@@ -86,6 +157,7 @@ const EpisodeList = ({ ep }) => {
                     ep: ep,
                     title: item.title,
                     number: item.number,
+                    cover: image,
                   })
                 }
               >
@@ -103,32 +175,25 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     flexWrap: "wrap",
-    padding: 10,
+    paddingHorizontal: 20,
     alignItems: "center",
+    justifyContent: "center",
+    gap: 5,
+    zIndex: 0,
   },
   btn: {
     backgroundColor: "#32a88b",
     padding: 10,
     borderRadius: 5,
-    margin: 5,
     width: 55,
     alignItems: "center",
   },
-  picker: {
-    height: 50,
-    width: "30%",
-    color: "#32a88b",
-    borderWidth: 1,
-    borderBlockColor: "#32a88b",
-    backgroundColor: "none",
-    marginLeft: "10",
-    borderRadius: 10,
-  },
   searchBar: {
-    width: "60%",
-    borderWidth: 1,
-    borderColor: "#32a88b",
-    borderRadius: 5,
-    color: "#fff",
+    width: "70%",
+    height: 50,
+  },
+  scrollView: {
+    marginBottom: 150,
+    zIndex: 0,
   },
 });

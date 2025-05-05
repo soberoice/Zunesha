@@ -10,7 +10,7 @@ import React from "react";
 import Icon from "react-native-vector-icons/FontAwesome6";
 import { useNavigation } from "expo-router";
 
-const Slidinglist = ({ data, limit }) => {
+const Slidinglist = ({ data, limit, start }) => {
   const navigation = useNavigation();
 
   return (
@@ -20,7 +20,7 @@ const Slidinglist = ({ data, limit }) => {
       contentContainerStyle={styles.scrollContainer}
     >
       {data &&
-        data.slice(0, limit).map((item, index) => (
+        data.slice(start ? start : 0, limit).map((item, index) => (
           <TouchableOpacity
             key={item.id}
             onPress={() => navigation.navigate("Details", { id: item.id })}
@@ -72,7 +72,7 @@ const Slidinglist = ({ data, limit }) => {
                   bottom: 0,
                 }}
               >
-                  <Icon name="closed-captioning" /> {item.sub}
+                <Icon name="closed-captioning" /> {item.sub}
               </Text>
             )}
 

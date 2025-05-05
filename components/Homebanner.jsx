@@ -17,23 +17,41 @@ import { useList } from "../components/Provider/WhatchlistProvider";
 
 const Homebanner = () => {
   const { addToWatchList, inWatchList } = useList();
+  const [mainData, setMaindata] = useState();
   const navigation = useNavigation();
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true);
         const response = await fetch(
-          "https://consapi-chi.vercel.app/anime/zoro/top-airing"
+          "https://aniwatch-api-v1-0.onrender.com/api/parse"
         );
         const json = await response.json();
-        setData(json.results.slice(0, 5) || []);
+        setData(json.slides);
       } catch (error) {
         console.error("Error fetching banner data:", error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchData();
   }, []);
+  const fetchMaindetails = async (id) => {
+    try {
+      const response = await fetch(
+        `https://consapi-chi.vercel.app/anime/zoro/info?id=${id}`
+      );
+      const json = await response.json();
+      console.log("mainData: ", json);
+      setMaindata(json);
+      addToWatchList(json);
+    } catch (error) {
+      console.error("Error fetching banner data:", error);
+    }
+  };
   const flatListRef = useRef(null);
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -48,15 +66,17 @@ const Homebanner = () => {
 
     return () => clearInterval(interval); // cleanup
   }, [currentIndex, data]);
-
+  if (loading) {
+    return <View style={{ aspectRatio: 16 / 12 }}></View>;
+  }
   const renderItem = ({ item }) => {
     return (
-      <View>
+      <View style={{ aspectRatio: 16 / 12 }}>
         <ImageBackground
-          source={{ uri: item.image }}
+          source={{ uri: item.imageAnime }}
           style={{
             width: width,
-            height: 350,
+            aspectRatio: 16 / 12,
           }}
         >
           <LinearGradient
@@ -66,7 +86,7 @@ const Homebanner = () => {
             style={styles.slide}
           >
             <Text numberOfLines={1} style={styles.text}>
-              {item.title}
+              {item.name}
             </Text>
             <View style={{ flexDirection: "row", gap: 10 }}>
               <TouchableOpacity style={styles.btn}>
@@ -74,24 +94,28 @@ const Homebanner = () => {
                 <Text
                   style={styles.btnText}
                   onPress={() =>
-                    navigation.navigate("Details", { id: item.id })
+                    navigation.navigate("Details", { id: item.animeId })
                   }
                 >
                   Watch Now
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={() => addToWatchList(item)}
+                onPress={() => fetchMaindetails(item.animeId)}
                 style={styles.btn2}
               >
                 <Icon
-                  name={!inWatchList(item.id) ? "bookmark-add" : "bookmark-added"}
+                  name={
+                    !inWatchList(item?.animeId)
+                      ? "bookmark-add"
+                      : "bookmark-added"
+                  }
                   size={20}
-                  color={!inWatchList(item.id) ? "#fff" : "#32a88b"}
+                  color={!inWatchList(item?.animeId) ? "#fff" : "#32a88b"}
                 />
                 <Text
                   style={{
-                    color: !inWatchList(item.id) ? "#fff" : "#32a88b",
+                    color: !inWatchList(item?.animeId) ? "#fff" : "#32a88b",
                     fontSize: 13,
                     fontWeight: "bold",
                     textAlign: "center",
@@ -118,7 +142,7 @@ const Homebanner = () => {
       </LinearGradient>
       <FlatList
         ref={flatListRef}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item) => item?.animeId?.toString()}
         horizontal
         data={data}
         showsHorizontalScrollIndicator={false}

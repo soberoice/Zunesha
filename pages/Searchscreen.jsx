@@ -1,4 +1,10 @@
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator } from "react-native";
 import {
@@ -9,6 +15,8 @@ import {
 import HorizontalAnimeList from "../components/HorizontalAnimeList";
 import AnimeList from "../components/AnimeList";
 import Pagination from "../components/Pagination";
+import { useNavigation } from "expo-router";
+import Icon from "react-native-vector-icons/MaterialIcons";
 
 const Searchscreen = () => {
   const [searchInput, setSearchInput] = useState();
@@ -17,10 +25,12 @@ const Searchscreen = () => {
   const [totalPages, setTotalPages] = useState();
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
+  const navigation = useNavigation();
   const fetchData = async () => {
-    setLoading(true);
-    setSearchResults([]);
     try {
+      setLoading(true);
+      setSearchResults([]);
+      setPage(1);
       setLoading(true);
       const respons = await fetch(
         `https://consapi-chi.vercel.app/anime/zoro/${searchInput}?page=${page}`
@@ -36,17 +46,28 @@ const Searchscreen = () => {
   };
   useEffect(() => {
     fetchData();
-  }, [page, searchInput]);
+  }, [page]);
+
   return (
     <GestureHandlerRootView>
       <View style={styles.container}>
-        <TextInput
-          onChangeText={(text) => setSearchInput(text)}
-          placeholder="Search Anime"
-          placeholderTextColor={"#32a88b"}
-          style={styles.searchBar}
-          onSubmitEditing={() => fetchData()}
-        />
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Icon
+              style={{ padding: 10 }}
+              name="keyboard-backspace"
+              color={"white"}
+              size={30}
+            />
+          </TouchableOpacity>
+          <TextInput
+            onChangeText={(text) => setSearchInput(text)}
+            placeholder="Search Anime"
+            placeholderTextColor={"#32a88b"}
+            style={styles.searchBar}
+            onSubmitEditing={() => fetchData()}
+          />
+        </View>
         {!searchInput && (
           <ScrollView>
             <AnimeList data={placeholder} />
@@ -89,7 +110,7 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   searchBar: {
-    width: "90%",
+    width: "80%",
     borderWidth: 1,
     borderColor: "#32a88b",
     borderRadius: 5,

@@ -4,11 +4,10 @@ import Homepage from "../pages/Homepage";
 import Searchscreen from "../pages/Searchscreen";
 import WatchList from "../pages/WatchList";
 import Icon from "react-native-vector-icons/FontAwesome";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet } from "react-native";
 import Watchscreen from "../pages/Watchscreen";
 import AnimeDetails from "../pages/AnimeDetails";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { NavigationContainer } from "@react-navigation/native"; // ✅ Import here
 import WatchEpisode from "../pages/WatchEpisode";
 import { WatchListProvider } from "../components/Provider/WhatchlistProvider";
 
@@ -55,23 +54,23 @@ function Tabs() {
 export default function App() {
   return (
     <WatchListProvider>
-        <Stack.Navigator>
-          <Stack.Screen
-            name="Tabs"
-            component={Tabs}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Details"
-            options={{ headerShown: false }}
-            component={AnimeDetails}
-          />
-          <Stack.Screen
-            name="watchepisode"
-            options={{ headerShown: false }}
-            component={WatchEpisode}
-          />
-        </Stack.Navigator>
+      <Stack.Navigator>
+        <Stack.Screen
+          name="Tabs"
+          component={Tabs}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Details"
+          options={{ headerShown: false }}
+          component={AnimeDetails}
+        />
+        <Stack.Screen
+          name="watchepisode"
+          options={{ headerShown: false }}
+          component={WatchEpisode}
+        />
+      </Stack.Navigator>
     </WatchListProvider>
   );
 }

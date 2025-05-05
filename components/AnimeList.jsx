@@ -44,7 +44,6 @@ const AnimeList = ({ data }) => {
             >
               {item.type}
             </Text>
-
             {item.sub && (
               <Text
                 style={{
@@ -107,7 +106,7 @@ const styles = StyleSheet.create({
     height: 200,
     paddingBottom: 10,
     marginHorizontal: 10,
-    marginBottom: 50
+    marginBottom: 50,
   },
   image: {
     width: 150,

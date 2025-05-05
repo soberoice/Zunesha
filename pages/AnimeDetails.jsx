@@ -64,14 +64,20 @@ const AnimeDetails = ({ route }) => {
     <SafeAreaView style={styles.container}>
       <ScrollView>
         <ImageBackground style={styles.image} source={{ uri: data?.image }}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Icon
-              style={{ padding: 10 }}
-              name="keyboard-backspace"
-              color={"white"}
-              size={30}
-            />
-          </TouchableOpacity>
+          <LinearGradient
+            colors={["transparent", "#001"]}
+            start={{ x: 0.5, y: 1 }}
+            end={{ x: 0.5, y: 0 }}
+          >
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <Icon
+                style={{ padding: 10 }}
+                name="keyboard-backspace"
+                color={"white"}
+                size={30}
+              />
+            </TouchableOpacity>
+          </LinearGradient>
           <LinearGradient
             colors={["transparent", "#001"]}
             start={{ x: 0.5, y: 0 }}

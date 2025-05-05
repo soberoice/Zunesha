@@ -13,6 +13,7 @@ export const WatchListProvider = ({ children }) => {
     const loadWatchList = async () => {
       try {
         const storedList = await AsyncStorage.getItem("@watchlist");
+        console.log("Stored Watch List: ", storedList);
         if (storedList !== null) {
           setWatchListArray(JSON.parse(storedList));
         }
@@ -27,10 +28,8 @@ export const WatchListProvider = ({ children }) => {
   useEffect(() => {
     const saveWatchList = async () => {
       try {
-        await AsyncStorage.setItem(
-          "@watchlist",
-          JSON.stringify(watchListArray)
-        );
+        const cleanedList = watchListArray.filter((item) => item && item.id);
+        await AsyncStorage.setItem("@watchlist", JSON.stringify(cleanedList));
       } catch (e) {
         console.error("Failed to save watchlist", e);
       }
@@ -39,27 +38,33 @@ export const WatchListProvider = ({ children }) => {
   }, [watchListArray]);
 
   const addToList = (item) => {
-    setWatchListArray([...watchListArray, item]);
+    if (!item || typeof item !== "object" || !item.id) {
+      console.warn("Attempted to add invalid item to watch list:", item);
+      return;
+    }
+    setWatchListArray((prev) => [...prev, item]);
   };
 
   const removeFromList = (item) => {
-    setWatchListArray(watchListArray.filter((i) => i.id !== item.id));
+    setWatchListArray(watchListArray.filter((i) => i?.id !== item?.id));
   };
-  function addToWatchList(item) {
-    const exists = watchListArray.some((i) => i.id === item.id);
 
+  function addToWatchList(item) {
+    console.log("anime :", item);
+    console.log(watchListArray);
+    const exists = inWatchList(item?.id);
     if (exists) {
       removeFromList(item);
     } else {
       addToList(item);
     }
   }
-  function inWatchList(item) {
-    const exists = watchListArray.some((i) => i?.id === item);
-    if (item) {
-      return exists;
-    }
+
+  function inWatchList(itemId) {
+    const exists = watchListArray.some((i) => i?.id === itemId);
+    return exists;
   }
+
   return (
     <WatchListContext.Provider
       value={{

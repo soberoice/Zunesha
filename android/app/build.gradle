@@ -83,6 +83,18 @@ def jscFlavor = 'org.webkit:android-jsc:+'
 android {
     ndkVersion rootProject.ext.ndkVersion
 
+    splits {
+        abi {
+            enable true
+            reset() // Reset to ensure that only the ABI splits are included
+            include "armeabi-v7a", "arm64-v8a", "x86_64" // List the architectures you want to build APKs for
+        }
+        density {
+            enable true // Optionally, you can split based on screen densities too
+            include "hdpi", "xhdpi", "xxhdpi"
+        }
+    }
+
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
