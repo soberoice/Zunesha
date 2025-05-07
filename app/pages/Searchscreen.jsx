@@ -1,22 +1,15 @@
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator } from "react-native";
 import {
   GestureHandlerRootView,
-  NativeViewGestureHandler,
   ScrollView,
 } from "react-native-gesture-handler";
-import HorizontalAnimeList from "../components/HorizontalAnimeList";
-import AnimeList from "../components/AnimeList";
-import Pagination from "../components/Pagination";
 import { useNavigation } from "expo-router";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import AnimeList from "../components/AnimeList";
+import Pagination from "../components/Pagination";
+import HorizontalAnimeList from "../components/HorizontalAnimeList";
 
 const Searchscreen = () => {
   const [searchInput, setSearchInput] = useState();
@@ -51,7 +44,13 @@ const Searchscreen = () => {
   return (
     <GestureHandlerRootView>
       <View style={styles.container}>
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            marginBottom: 10,
+          }}
+        >
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Icon
               style={{ padding: 10 }}
@@ -68,11 +67,6 @@ const Searchscreen = () => {
             onSubmitEditing={() => fetchData()}
           />
         </View>
-        {!searchInput && (
-          <ScrollView>
-            <AnimeList data={placeholder} />
-          </ScrollView>
-        )}
         {!loading ? (
           searchResults && (
             <ScrollView>
@@ -107,7 +101,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#001",
-    paddingVertical: 20,
+    paddingTop: 20,
   },
   searchBar: {
     width: "80%",

@@ -45,26 +45,26 @@ const AnimeList = ({ data }) => {
               {item.type}
             </Text>
             {item.sub && (
-              <Text
+              <View
                 style={{
-                  fontWeight: "700",
-                  fontSize: 12,
                   padding: 5,
                   borderRadius: 5,
                   position: "absolute",
-                  color: "#fff",
                   backgroundColor: "#32a88b",
                   left: 0,
                   zIndex: 1,
                   bottom: 0,
+                  alignItems: "center",
+                  flexDirection: "row",
                 }}
               >
-                <Icon name="closed-captioning" /> {item.sub}
-              </Text>
+                <Icon name="closed-captioning" color={"#fff"} />
+                <Text style={{ color: "#fff", marginLeft: 4 }}>{item.sub}</Text>
+              </View>
             )}
 
             {item.dub > 0 && (
-              <Text
+              <View
                 style={{
                   fontWeight: "700",
                   fontSize: 12,
@@ -78,8 +78,9 @@ const AnimeList = ({ data }) => {
                   bottom: 0,
                 }}
               >
-                <Icon name="microphone" /> {item.dub}
-              </Text>
+                <Icon name="microphone" />
+                <Text style={{ color: "#fff", marginLeft: 4 }}>{item.dub}</Text>
+              </View>
             )}
             <Image style={styles.image} source={{ uri: item.image }} />
             <Text numberOfLines={1} style={styles.text}>
@@ -116,7 +117,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   text: {
-    fontSize: 18,
+    fontSize: 15,
     color: "#fff",
     textAlign: "left",
   },

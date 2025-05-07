@@ -22,7 +22,7 @@ const splitIntoChunks = (array) => {
   return result;
 };
 
-const EpisodeList = ({ ep, image }) => {
+const EpisodeList = ({ ep, image, currentEp }) => {
   const navigation = useNavigation();
   const chunks = splitIntoChunks(ep);
   const [epList, setEpList] = useState(1);
@@ -44,7 +44,7 @@ const EpisodeList = ({ ep, image }) => {
 
     return (
       <TouchableOpacity
-        style={styles.btn}
+        style={filteredEp[0]?.number === currentEp ? styles.active : styles.btn}
         key={filteredEp[0].id}
         onPress={() =>
           navigation.navigate("watchepisode", {
@@ -56,7 +56,13 @@ const EpisodeList = ({ ep, image }) => {
           })
         }
       >
-        <Text style={{ color: "#fff" }}>{filteredEp[0]?.number}</Text>
+        <Text
+          style={{
+            color: filteredEp[0]?.number === currentEp ? "#32a88b" : "#fff",
+          }}
+        >
+          {filteredEp[0]?.number}
+        </Text>
       </TouchableOpacity>
     );
   }
@@ -76,7 +82,7 @@ const EpisodeList = ({ ep, image }) => {
       <View
         style={{
           flexDirection: "row",
-          justifyContent: "center",
+          justifyContent: "space-evenly",
           marginVertical: 15,
           width: "100%",
           alignItems: "center",
@@ -100,7 +106,7 @@ const EpisodeList = ({ ep, image }) => {
             style={{
               backgroundColor: "#000",
               borderColor: "transparent",
-              width: "80%",
+              width: "100%",
             }}
             textStyle={{
               color: "#32a88b",
@@ -108,7 +114,7 @@ const EpisodeList = ({ ep, image }) => {
             dropDownContainerStyle={{
               backgroundColor: "#001",
               borderColor: "transparent",
-              width: "80%",
+              width: "100%",
             }}
             listItemLabelStyle={{
               color: "#32a88b",
@@ -123,7 +129,7 @@ const EpisodeList = ({ ep, image }) => {
         </View>
         <View
           style={{
-            width: "50%",
+            width: "35%",
             flexDirection: "row",
             borderWidth: 1,
             alignItems: "center",
@@ -135,36 +141,51 @@ const EpisodeList = ({ ep, image }) => {
           <TextInput
             placeholderTextColor={"#32a88b"}
             onChangeText={(text) => setSearchInput(text)}
-            placeholder={`Search Episode`}
+            placeholder={`Find Episode`}
             style={styles.searchBar}
           />
         </View>
       </View>
-
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={[styles.container, { paddingBottom: "100%" }]}
+      <View
+        style={{
+          justifyContent: "center",
+          alignItems: "center",
+          width: "100%",
+        }}
       >
-        {searchInput
-          ? search()
-          : chunks[epList - 1]?.map((item) => (
-              <TouchableOpacity
-                style={styles.btn}
-                key={item?.id}
-                onPress={() =>
-                  navigation.navigate("watchepisode", {
-                    id: item.id,
-                    ep: ep,
-                    title: item.title,
-                    number: item.number,
-                    cover: image,
-                  })
-                }
-              >
-                <Text style={{ color: "#fff" }}>{item?.number}</Text>
-              </TouchableOpacity>
-            ))}
-      </ScrollView>
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={[styles.container, { paddingBottom: "100%" }]}
+        >
+          {searchInput
+            ? search()
+            : chunks[epList - 1]?.map((item) => (
+                <TouchableOpacity
+                  style={
+                    item?.number === currentEp ? styles.active : styles.btn
+                  }
+                  key={item?.id}
+                  onPress={() =>
+                    navigation.navigate("watchepisode", {
+                      id: item.id,
+                      ep: ep,
+                      title: item.title,
+                      number: item.number,
+                      cover: image,
+                    })
+                  }
+                >
+                  <Text
+                    style={{
+                      color: item?.number === currentEp ? "#32a88b" : "#fff",
+                    }}
+                  >
+                    {item?.number}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+        </ScrollView>
+      </View>
     </View>
   );
 };
@@ -175,9 +196,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     flexWrap: "wrap",
-    paddingHorizontal: 20,
-    alignItems: "center",
-    justifyContent: "center",
+    width: "90%",
     gap: 5,
     zIndex: 0,
   },
@@ -189,11 +208,21 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   searchBar: {
-    width: "70%",
+    width: "80%",
     height: 50,
+    color: "#32a88b",
   },
   scrollView: {
     marginBottom: 150,
     zIndex: 0,
+  },
+  active: {
+    backgroundColor: "transparent",
+    padding: 10,
+    borderRadius: 5,
+    width: 55,
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#32a88b",
   },
 });

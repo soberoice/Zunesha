@@ -8,14 +8,16 @@ import {
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import Pagination from "../components/Pagination";
-const AnimeList = React.lazy(() => import("../components/AnimeList"));
+import AnimeList from "../components/AnimeList";
 
 const Watchscreen = () => {
   const [active, setActive] = useState("TV");
   const tags = ["TV", "Movies", "Specials", "ONA", "OVA"];
   const [data, setData] = useState();
   const [loading, setLoading] = useState(false);
-  const [page, setPage] = useState();
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState();
+  const [hasNextPage, setHasNextPage] = useState();
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -26,6 +28,8 @@ const Watchscreen = () => {
         );
         const res = await response.json();
         setData(res.results);
+        setTotalPages(res.totalPages);
+        setHasNextPage(res.hasNextPage);
       } catch (error) {
         console.error(error);
       } finally {
@@ -33,7 +37,7 @@ const Watchscreen = () => {
       }
     };
     fetchData();
-  }, [active]);
+  }, [active, page]);
   return (
     <View style={styles.container}>
       <View style={styles.tagContainer}>
@@ -62,7 +66,12 @@ const Watchscreen = () => {
       ) : (
         <ScrollView>
           <AnimeList data={data} />
-          <Pagination page={page} />
+          <Pagination
+            page={page}
+            totalPages={totalPages}
+            setPage={setPage}
+            hasNextPage={hasNextPage}
+          />
         </ScrollView>
       )}
     </View>
@@ -82,13 +91,13 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   btn: {
-    width: 65,
     alignItems: "center",
   },
   tagContainer: {
     flexDirection: "row",
-    gap: 4,
-    marginVertical: 25,
+    gap: 25,
+    marginTop: 25,
     marginHorizontal: "auto",
+    marginBottom: 10,
   },
 });

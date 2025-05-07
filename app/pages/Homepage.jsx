@@ -5,19 +5,22 @@ import {
   StatusBar,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import Slidinglist from "../components/Slidinglist";
-import Homebanner from "../components/Homebanner";
 
 import * as ScreenOrientation from "expo-screen-orientation";
+import Homebanner from "../components/Homebanner";
+import Slidinglist from "../components/Slidinglist";
+import { useNavigation } from "expo-router";
 
 const Homepage = () => {
   const [topAiring, setTopAiring] = useState();
   const [newEpisodes, setNewEpisodes] = useState();
   const [popular, setPopular] = useState();
   const [loading, setLoading] = useState(false);
+  const navigation = useNavigation();
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -60,11 +63,10 @@ const Homepage = () => {
       <ScrollView>
         <Homebanner />
         {topAiring && (
-          <View>
+          <View style={{ marginTop: 15 }}>
             <View
               style={{
                 flexDirection: "column",
-                paddingVertical: 10,
               }}
             >
               <View
@@ -77,29 +79,38 @@ const Homepage = () => {
                   style={{
                     paddingLeft: 10,
                     color: "#fff",
-                    fontSize: 20,
+                    fontSize: 18,
                     fontWeight: "700",
                   }}
                 >
                   Top Airing
                 </Text>
-                <Text
-                  style={{
-                    paddingRight: 10,
-                    color: "#32a88b",
-                    fontSize: 15,
-                    fontWeight: "700",
-                  }}
+                <TouchableOpacity
+                  onPress={() =>
+                    navigation.navigate("more", {
+                      type: "see-more",
+                      value: "top-airing",
+                      Name: "Top Airing",
+                    })
+                  }
                 >
-                  See more
-                </Text>
+                  <Text
+                    style={{
+                      paddingRight: 10,
+                      color: "#32a88b",
+                      fontSize: 15,
+                      fontWeight: "700",
+                    }}
+                  >
+                    See more
+                  </Text>
+                </TouchableOpacity>
               </View>
               <Slidinglist start={0} data={topAiring} limit={10} />
             </View>
             <View
               style={{
                 flexDirection: "column",
-                paddingVertical: 10,
               }}
             >
               <View
@@ -113,29 +124,38 @@ const Homepage = () => {
                   style={{
                     paddingLeft: 10,
                     color: "#fff",
-                    fontSize: 20,
+                    fontSize: 18,
                     fontWeight: "700",
                   }}
                 >
                   New Episodes
                 </Text>
-                <Text
-                  style={{
-                    paddingRight: 10,
-                    color: "#32a88b",
-                    fontSize: 15,
-                    fontWeight: "700",
-                  }}
+                <TouchableOpacity
+                  onPress={() =>
+                    navigation.navigate("more", {
+                      type: "see-more",
+                      value: "recent-episodes",
+                      Name: "New Episodes",
+                    })
+                  }
                 >
-                  See more
-                </Text>
+                  <Text
+                    style={{
+                      paddingRight: 10,
+                      color: "#32a88b",
+                      fontSize: 15,
+                      fontWeight: "700",
+                    }}
+                  >
+                    See more
+                  </Text>
+                </TouchableOpacity>
               </View>
               <Slidinglist data={newEpisodes} limit={10} />
             </View>
             <View
               style={{
                 flexDirection: "column",
-                paddingVertical: 10,
               }}
             >
               <View
@@ -149,22 +169,32 @@ const Homepage = () => {
                   style={{
                     paddingLeft: 10,
                     color: "#fff",
-                    fontSize: 20,
+                    fontSize: 18,
                     fontWeight: "700",
                   }}
                 >
                   Most popular
                 </Text>
-                <Text
-                  style={{
-                    paddingRight: 10,
-                    color: "#32a88b",
-                    fontSize: 15,
-                    fontWeight: "700",
-                  }}
+                <TouchableOpacity
+                  onPress={() =>
+                    navigation.navigate("more", {
+                      type: "see-more",
+                      value: "most-popular",
+                      Name: "Most Popular",
+                    })
+                  }
                 >
-                  See more
-                </Text>
+                  <Text
+                    style={{
+                      paddingRight: 10,
+                      color: "#32a88b",
+                      fontSize: 15,
+                      fontWeight: "700",
+                    }}
+                  >
+                    See more
+                  </Text>
+                </TouchableOpacity>
               </View>
               <Slidinglist data={popular} limit={10} />
             </View>

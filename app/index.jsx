@@ -1,15 +1,16 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import Homepage from "../pages/Homepage";
-import Searchscreen from "../pages/Searchscreen";
-import WatchList from "../pages/WatchList";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { StyleSheet } from "react-native";
-import Watchscreen from "../pages/Watchscreen";
-import AnimeDetails from "../pages/AnimeDetails";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import WatchEpisode from "../pages/WatchEpisode";
-import { WatchListProvider } from "../components/Provider/WhatchlistProvider";
+import { WatchListProvider } from "./components/Provider/WhatchlistProvider";
+import WatchEpisode from "./pages/WatchEpisode";
+import AnimeDetails from "./pages/AnimeDetails";
+import Homepage from "./pages/Homepage";
+import Searchscreen from "./pages/Searchscreen";
+import WatchList from "./pages/WatchList";
+import Watchscreen from "./pages/Watchscreen";
+import More from "./pages/More";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -69,6 +70,11 @@ export default function App() {
           name="watchepisode"
           options={{ headerShown: false }}
           component={WatchEpisode}
+        />
+        <Stack.Screen
+          name="more"
+          options={{ headerShown: false }}
+          component={More}
         />
       </Stack.Navigator>
     </WatchListProvider>

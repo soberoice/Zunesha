@@ -11,7 +11,6 @@ import {
 } from "react-native";
 import Video from "react-native-video";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import EpisodeList from "../components/EpisodeList";
 import * as ScreenOrientation from "expo-screen-orientation";
 import Slider from "@react-native-community/slider";
 import Icon from "react-native-vector-icons/MaterialIcons";
@@ -19,6 +18,7 @@ import { useMemo } from "react";
 import VideoSettings from "../components/VideoSettings";
 import { useNavigation } from "expo-router";
 import * as SystemUI from "expo-system-ui";
+import EpisodeList from "../components/EpisodeList";
 
 function usePrevious(value) {
   const ref = useRef();
@@ -462,7 +462,7 @@ const WatchEpisode = ({ route }) => {
                   <View
                     style={{
                       flexDirection: "row",
-                      justifyContent: "space-between",
+                      justifyContent: "space-evenly",
                       alignItems: "center",
                       height: 40,
                       bottom: 0,
@@ -523,7 +523,7 @@ const WatchEpisode = ({ route }) => {
         <View></View>
       )}
       <View style={{ paddingVertical: 10 }}>
-        <EpisodeList ep={ep} image={cover} />
+        <EpisodeList ep={ep} image={cover} currentEp={number} />
       </View>
       {isVideoReady && (
         <VideoSettings

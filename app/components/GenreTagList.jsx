@@ -1,7 +1,9 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React from "react";
+import { useNavigation } from "expo-router";
 
 const GenreTagList = ({ genres }) => {
+  const navigation = useNavigation();
   return (
     <View
       style={{ flexDirection: "row", flexWrap: "wrap", marginHorizontal: 5 }}
@@ -17,11 +19,18 @@ const GenreTagList = ({ genres }) => {
             margin: 1,
             marginVertical: 5,
           }}
+          onPress={() =>
+            navigation.navigate("more", {
+              type: "genre",
+              value: `${genre}`,
+              Name: `${genre}`,
+            })
+          }
         >
           <Text
             style={{
               color: "white",
-              fontSize: 12,
+              fontSize: 10,
               fontWeight: "bold",
               textAlign: "center",
             }}

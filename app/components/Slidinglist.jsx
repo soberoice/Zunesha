@@ -22,14 +22,14 @@ const Slidinglist = ({ data, limit, start }) => {
       {data &&
         data.slice(start ? start : 0, limit).map((item, index) => (
           <TouchableOpacity
-            key={item.id}
+            key={index}
             onPress={() => navigation.navigate("Details", { id: item.id })}
             style={styles.itemContainer}
           >
             <Text
               style={{
                 fontWeight: "700",
-                fontSize: 12,
+                fontSize: 10,
                 padding: 5,
                 borderRadius: 5,
                 position: "absolute",
@@ -44,7 +44,7 @@ const Slidinglist = ({ data, limit, start }) => {
             <Text
               style={{
                 fontWeight: "700",
-                fontSize: 12,
+                fontSize: 10,
                 padding: 5,
                 borderRadius: 5,
                 position: "absolute",
@@ -61,7 +61,7 @@ const Slidinglist = ({ data, limit, start }) => {
               <Text
                 style={{
                   fontWeight: "700",
-                  fontSize: 12,
+                  fontSize: 10,
                   padding: 5,
                   borderRadius: 5,
                   position: "absolute",
@@ -80,7 +80,7 @@ const Slidinglist = ({ data, limit, start }) => {
               <Text
                 style={{
                   fontWeight: "700",
-                  fontSize: 12,
+                  fontSize: 10,
                   padding: 5,
                   borderRadius: 5,
                   position: "absolute",
@@ -114,20 +114,20 @@ const styles = StyleSheet.create({
     flexWrap: "nowrap",
   },
   itemContainer: {
-    width: 150,
-    height: 200,
+    height: 175,
     paddingBottom: 10,
     marginHorizontal: 10,
+    aspectRatio: 9 / 12,
   },
   image: {
-    width: 150,
-    height: 200,
+    height: 175,
     resizeMode: "cover",
     marginBottom: 10,
     borderRadius: 10,
+    aspectRatio: 9 / 12,
   },
   text: {
-    fontSize: 18,
+    fontSize: 15,
     color: "#fff",
     textAlign: "left",
   },

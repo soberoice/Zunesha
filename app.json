@@ -5,11 +5,11 @@
     "slug": "app",
     "version": "1.0.0",
     "orientation": "default",
-    "icon": "./assets/ASlogo.png",
+    "icon": "./assets/NEWASLOGO.png",
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/ASlogo.png",
+      "image": "./assets/NEWASLOGO.png",
       "resizeMode": "contain",
       "backgroundColor": "#000000"
     },
@@ -18,13 +18,13 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/ASlogo.png",
-        "backgroundColor": "#000000"
+        "foregroundImage": "./assets/NEWASLOGO.png",
+        "backgroundColor": "#1a1a1a"
       },
       "package": "com.anonymous.app"
     },
     "web": {
-      "favicon": "./assets/ASlogo.png"
+      "favicon": "./assets/NEWASLOGO.png"
     },
     "plugins": [
       "expo-router"

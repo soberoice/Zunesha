@@ -22,20 +22,27 @@ const HorizontalAnimeList = ({ data }) => {
                 {item?.title}
               </Text>
               <View style={{ flexDirection: "row", gap: 5 }}>
-                <Text style={styles.desIcon}> {item?.type}</Text>
+                <View style={styles.desIcon}>
+                  <Text style={styles.descText}>{item?.type}</Text>
+                </View>
                 {item?.duration && (
-                  <Text style={styles.desIcon}> {item?.duration}</Text>
+                  <View style={styles.desIcon}>
+                    <Text style={styles.descText}>{item?.duration}</Text>
+                  </View>
                 )}
                 {item && (
-                  <Text style={styles.desIcon}>
-                    <Icon name="closed-caption" />
-                    {item?.sub || item?.totalEpisodes}
-                  </Text>
+                  <View style={styles.desIcon}>
+                    <Icon name="closed-caption" size={18} color={"#fff"} />
+                    <Text style={styles.descText}>
+                      {item?.sub || item?.totalEpisodes}
+                    </Text>
+                  </View>
                 )}
                 {item?.dub > 0 && (
-                  <Text style={styles.desIcon}>
-                    <Icon name="mic" /> {item?.dub}
-                  </Text>
+                  <View style={styles.desIcon}>
+                    <Icon name="mic" size={18} color={"#fff"} />
+                    <Text style={styles.descText}>{item?.dub}</Text>
+                  </View>
                 )}
               </View>
               {item && (
@@ -114,12 +121,15 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   desIcon: {
-    fontWeight: "700",
-    fontSize: 12,
-    padding: 5,
+    flexDirection: "row",
     borderRadius: 5,
-    color: "#fff",
     backgroundColor: "#32a88b",
-    zIndex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 5,
+  },
+  descText: {
+    color: "#fff",
+    fontSize: 12,
   },
 });

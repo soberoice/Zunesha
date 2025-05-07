@@ -1,9 +1,9 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React from "react";
-import { useList } from "../components/Provider/WhatchlistProvider";
 import HorizontalAnimeList from "../components/HorizontalAnimeList";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { useNavigation } from "expo-router";
+import { useList } from "../components/Provider/WhatchlistProvider";
 
 const WatchList = () => {
   const navigation = useNavigation();

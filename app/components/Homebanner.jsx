@@ -12,12 +12,11 @@ import { LinearGradient } from "expo-linear-gradient";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import Navbar from "./Navbar";
 import { useNavigation } from "expo-router";
+import { useList } from "./Provider/WhatchlistProvider";
 const { width } = Dimensions.get("window");
-import { useList } from "../components/Provider/WhatchlistProvider";
 
 const Homebanner = () => {
   const { addToWatchList, inWatchList } = useList();
-  const [mainData, setMaindata] = useState();
   const navigation = useNavigation();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -46,7 +45,6 @@ const Homebanner = () => {
       );
       const json = await response.json();
       console.log("mainData: ", json);
-      setMaindata(json);
       addToWatchList(json);
     } catch (error) {
       console.error("Error fetching banner data:", error);
@@ -62,7 +60,7 @@ const Homebanner = () => {
       const nextIndex = (currentIndex + 1) % data.length;
       flatListRef.current?.scrollToIndex({ index: nextIndex, animated: true });
       setCurrentIndex(nextIndex);
-    }, 3000); // 3 seconds
+    }, 5000); // 3 seconds
 
     return () => clearInterval(interval); // cleanup
   }, [currentIndex, data]);
@@ -172,7 +170,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   text: {
-    fontSize: 24,
+    fontSize: 18,
     color: "#fff",
   },
   btn: {

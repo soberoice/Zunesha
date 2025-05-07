@@ -14,8 +14,8 @@ import { useNavigation } from "expo-router";
 import {
   ScrollView,
   GestureHandlerRootView,
-} from "react-native-gesture-handler"; // Import GestureHandlerRootView
-import Icon from "react-native-vector-icons/FontAwesome";
+} from "react-native-gesture-handler";
+import Icon from "react-native-vector-icons/MaterialIcons";
 
 const AnimeDetailsEpList = ({ ep, image }) => {
   const navigation = useNavigation();
@@ -69,22 +69,37 @@ const AnimeDetailsEpList = ({ ep, image }) => {
   }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <View
-        style={{
-          marginTop: 10,
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <TextInput
-          onChangeText={(text) => setSearchInput(text)}
-          placeholder="Search Episode"
-          placeholderTextColor={"#32a88b"}
-          style={styles.searchBar}
-        />
+    <GestureHandlerRootView style={{ height: "90%", width: "100%" }}>
+      <View style={{ width: "100%", alignItems: "center" }}>
+        <View
+          style={{
+            marginTop: 10,
+            alignItems: "center",
+            width: "90%",
+            flexDirection: "row",
+            borderWidth: 1,
+            borderColor: "#32a88b",
+            borderRadius: 5,
+            justifyContent: "center",
+          }}
+        >
+          <View
+            style={{
+              width: "15%",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Icon name="search" color={"#32a88b"} size={30} />
+          </View>
+          <TextInput
+            onChangeText={(text) => setSearchInput(text)}
+            placeholder="Search Episode"
+            placeholderTextColor={"#32a88b"}
+            style={styles.searchBar}
+          />
+        </View>
       </View>
-
       <ScrollView
         scrollEnabled={true}
         horizontal={true}
@@ -119,7 +134,7 @@ const AnimeDetailsEpList = ({ ep, image }) => {
                 />
                 <Text
                   numberOfLines={3}
-                  style={{ color: "#32a88b", fontWeight: "bold" }}
+                  style={{ color: "#32a88b", fontWeight: "bold", fontSize: 15 }}
                 >
                   Episode {item?.number}: {item.title}
                 </Text>
@@ -131,7 +146,7 @@ const AnimeDetailsEpList = ({ ep, image }) => {
           style={{
             color: "#32a88b",
             fontWeight: "bold",
-            paddingHorizontal: 10,
+            paddingHorizontal: 20,
           }}
         >
           Search to see other episodes!
@@ -160,20 +175,16 @@ const styles = StyleSheet.create({
   },
 
   btn: {
-    padding: 10,
-    margin: 5,
+    paddingVertical: 10,
+    marginHorizontal: 5,
     width: 150,
     alignItems: "left",
   },
 
   searchBar: {
-    width: "90%",
-    borderWidth: 1,
-    borderColor: "#32a88b",
-    borderRadius: 5,
+    width: "85%",
     color: "#fff",
     height: 50,
-    paddingHorizontal: 10,
   },
   image: {
     width: 150,
@@ -184,6 +195,6 @@ const styles = StyleSheet.create({
   playbtn: {
     position: "absolute",
     top: 40,
-    right: 50,
+    right: 60,
   },
 });
