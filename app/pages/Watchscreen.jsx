@@ -23,8 +23,9 @@ const Watchscreen = () => {
       try {
         setData({});
         setLoading(true);
+        const apiUrl = process.env.EXPO_PUBLIC_API_URL;
         const response = await fetch(
-          `https://consapi-chi.vercel.app/anime/zoro/${active.toLowerCase()}?page=${page}`
+          `${apiUrl}/anime/zoro/${active.toLowerCase()}?page=${page}`
         );
         const res = await response.json();
         setData(res.results);

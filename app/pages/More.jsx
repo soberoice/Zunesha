@@ -32,10 +32,11 @@ const More = ({ route }) => {
       try {
         setData();
         setLoading(true);
+        const apiUrl = process.env.EXPO_PUBLIC_API_URL;
         const respons = await fetch(
           type === `genre`
-            ? `https://consapi-chi.vercel.app/anime/zoro/genre/${value}?page=${page}`
-            : `https://consapi-chi.vercel.app/anime/zoro/${value}?page=${page}`
+            ? `${apiUrl}/anime/zoro/genre/${value}?page=${page}`
+            : `${apiUrl}/anime/zoro/${value}?page=${page}`
         );
         const res = await respons.json();
         setData(res.results);

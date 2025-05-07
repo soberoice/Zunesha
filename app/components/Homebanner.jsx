@@ -25,9 +25,8 @@ const Homebanner = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await fetch(
-          "https://aniwatch-api-v1-0.onrender.com/api/parse"
-        );
+        const apiUrl = process.env.EXPO_PUBLIC_BANNER_URL;
+        const response = await fetch(`${apiUrl}`);
         const json = await response.json();
         setData(json.slides);
       } catch (error) {

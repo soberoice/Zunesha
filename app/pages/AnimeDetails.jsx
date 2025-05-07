@@ -22,6 +22,7 @@ import { useList } from "../components/Provider/WhatchlistProvider";
 import Slidinglist from "../components/Slidinglist";
 import GenreTagList from "../components/GenreTagList";
 import YoutubeIframe from "react-native-youtube-iframe";
+import CharacterList from "../components/CharacterList";
 
 const AnimeDetails = ({ route }) => {
   const { addToWatchList, inWatchList } = useList();
@@ -32,15 +33,22 @@ const AnimeDetails = ({ route }) => {
   const [desToggle, setDesToggle] = useState(false);
   const isInWatchList = data?.id ? inWatchList(id) : false;
   const [metaData, setMetaData] = useState();
+  const [anilist, setAnilist] = useState();
   const navigation = useNavigation();
 
+  function getTime(time) {
+    const timestamp = time; // Unix timestamp in seconds
+    const date = new Date(timestamp * 1000); // Convert to milliseconds
+    const formattedDate = date.toLocaleString(); // You can customize this format
+    return formattedDate;
+  }
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await fetch(
-          `https://consapi-chi.vercel.app/anime/zoro/info?id=${id}`
-        );
+        const apiUrl = process.env.EXPO_PUBLIC_API_URL;
+        const response = await fetch(`${apiUrl}/anime/zoro/info?id=${id}`);
+        console.log("Anime Id: ", id);
         const res = await response.json();
         setData(res);
       } catch (error) {
@@ -58,9 +66,10 @@ const AnimeDetails = ({ route }) => {
     if (data) {
       const fetchMeta = async () => {
         try {
-          const meta = await fetch(
-            `https://consapi-chi.vercel.app/meta/mal/info/${data?.malID}`
-          );
+          setMetaData();
+          const apiUrl = process.env.EXPO_PUBLIC_API_URL;
+          const meta = await fetch(`${apiUrl}/meta/mal/info/${data?.malID}`);
+          console.log("MAL Id: ", data.malID);
           const metaRes = await meta.json();
           setMetaData(metaRes);
           console.log("meta data: ", metaRes);
@@ -73,9 +82,31 @@ const AnimeDetails = ({ route }) => {
           console.log("error fetching meta data: ", error);
         }
       };
+      const fetchAnilistMeta = async () => {
+        try {
+          setAnilist();
+          const apiUrl = process.env.EXPO_PUBLIC_API_URL;
+          const meta = await fetch(
+            `${apiUrl}/meta/anilist/info/${data?.alID}?provider=gogoanime`
+          );
+          console.log("anilist id: ", data.alID);
+          const metaRes = await meta.json();
+          setAnilist(metaRes);
+          console.log("meta data: ", metaRes);
+          console.log(
+            "trailer link: ",
+            `${metaData?.trailer?.site}${metaData?.trailer?.id}`
+          );
+          console.log("trailer thumbnail: ", `${metaData?.trailer?.thumbnail}`);
+        } catch (error) {
+          console.log("error fetching meta data: ", error);
+        }
+      };
       fetchMeta();
+      fetchAnilistMeta();
     }
   }, [data]);
+
   const trailerLink = `${metaData?.trailer?.site}${metaData?.trailer?.id}`;
   if (!data && loading) {
     return (
@@ -205,6 +236,18 @@ const AnimeDetails = ({ route }) => {
           </LinearGradient>
         </ImageBackground>
         <GenreTagList genres={data?.genres} />
+        <View
+          style={{ width: "100%", justifyContent: "center", minHeight: 35 }}
+        >
+          {anilist?.nextAiringEpisode && (
+            <Text
+              style={{ color: "#32a88b", fontWeight: "bold", paddingLeft: 10 }}
+            >
+              Episode {anilist?.nextAiringEpisode?.episode} Estimated Release
+              Time: {getTime(anilist?.nextAiringEpisode?.airingTime)}
+            </Text>
+          )}
+        </View>
         <Text numberOfLines={desToggle ? null : 5} style={styles.des}>
           {data?.description}
         </Text>
@@ -331,6 +374,11 @@ const AnimeDetails = ({ route }) => {
           )}
           {tab === "Recomended" && (
             <Slidinglist data={data?.recommendations} limit={10} />
+          )}
+        </View>
+        <View>
+          {anilist?.characters && (
+            <CharacterList characters={anilist?.characters} />
           )}
         </View>
       </ScrollView>

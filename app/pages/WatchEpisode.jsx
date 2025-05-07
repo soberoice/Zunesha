@@ -152,9 +152,18 @@ const WatchEpisode = ({ route }) => {
 
   const formatTime = (seconds) => {
     if (isNaN(seconds) || seconds == null) return "0:00";
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
+
+    const totalSeconds = Math.floor(seconds);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const secs = totalSeconds % 60;
+
+    const h = hours > 0 ? `${hours}:` : "";
+    const m =
+      hours > 0 ? `${minutes.toString().padStart(2, "0")}` : `${minutes}`;
+    const s = secs.toString().padStart(2, "0");
+
+    return `${h}${m}:${s}`;
   };
   const fetchData = async () => {
     try {
@@ -162,9 +171,8 @@ const WatchEpisode = ({ route }) => {
       setIsMute(false);
       setData();
       setLoading(true);
-      const response = await fetch(
-        `https://consapi-chi.vercel.app/anime/zoro/watch/${id}`
-      );
+      const apiUrl = process.env.EXPO_PUBLIC_API_URL;
+      const response = await fetch(`${apiUrl}/anime/zoro/watch/${id}`);
       const res = await response.json();
       setData(res);
     } catch (error) {

@@ -25,15 +25,10 @@ const Homepage = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const topResponse = await fetch(
-          "https://consapi-chi.vercel.app/anime/zoro/top-airing"
-        );
-        const newResponse = await fetch(
-          "https://consapi-chi.vercel.app/anime/zoro/recent-episodes"
-        );
-        const popularRes = await fetch(
-          "https://consapi-chi.vercel.app/anime/zoro/most-popular"
-        );
+        const apiUrl = process.env.EXPO_PUBLIC_API_URL;
+        const topResponse = await fetch(`${apiUrl}/anime/zoro/top-airing`);
+        const newResponse = await fetch(`${apiUrl}/anime/zoro/recent-episodes`);
+        const popularRes = await fetch(`${apiUrl}/anime/zoro/most-popular`);
         const newData = await newResponse.json();
         const topData = await topResponse.json();
         const popularData = await popularRes.json();

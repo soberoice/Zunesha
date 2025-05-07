@@ -25,8 +25,9 @@ const Searchscreen = () => {
       setSearchResults([]);
       setPage(1);
       setLoading(true);
+      const apiUrl = process.env.EXPO_PUBLIC_API_URL;
       const respons = await fetch(
-        `https://consapi-chi.vercel.app/anime/zoro/${searchInput}?page=${page}`
+        `${apiUrl}/anime/zoro/${searchInput}?page=${page}`
       );
       const data = await respons.json();
       setSearchResults(data);

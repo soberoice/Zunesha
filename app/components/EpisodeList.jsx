@@ -150,12 +150,13 @@ const EpisodeList = ({ ep, image, currentEp }) => {
         style={{
           justifyContent: "center",
           alignItems: "center",
-          width: "100%",
+          width: "83%",
+          alignSelf: "center",
         }}
       >
         <ScrollView
           style={styles.scrollView}
-          contentContainerStyle={[styles.container, { paddingBottom: "100%" }]}
+          contentContainerStyle={styles.container}
         >
           {searchInput
             ? search()
@@ -196,9 +197,10 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     flexWrap: "wrap",
-    width: "90%",
     gap: 5,
     zIndex: 0,
+    width: "100%",
+    paddingBottom: 500,
   },
   btn: {
     backgroundColor: "#32a88b",
@@ -215,6 +217,7 @@ const styles = StyleSheet.create({
   scrollView: {
     marginBottom: 150,
     zIndex: 0,
+    width: "100%",
   },
   active: {
     backgroundColor: "transparent",

@@ -134,7 +134,7 @@ const AnimeDetailsEpList = ({ ep, image }) => {
                 />
                 <Text
                   numberOfLines={3}
-                  style={{ color: "#32a88b", fontWeight: "bold", fontSize: 15 }}
+                  style={{ color: "#32a88b", fontWeight: "bold", fontSize: 13 }}
                 >
                   Episode {item?.number}: {item.title}
                 </Text>
