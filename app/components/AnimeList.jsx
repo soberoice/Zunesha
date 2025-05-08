@@ -66,19 +66,18 @@ const AnimeList = ({ data }) => {
             {item.dub > 0 && (
               <View
                 style={{
-                  fontWeight: "700",
-                  fontSize: 12,
                   padding: 5,
                   borderRadius: 5,
                   position: "absolute",
-                  color: "#fff",
                   backgroundColor: "#32a88b",
                   right: 0,
                   zIndex: 1,
                   bottom: 0,
+                  alignItems: "center",
+                  flexDirection: "row",
                 }}
               >
-                <Icon name="microphone" />
+                <Icon name="microphone" color={"#fff"} />
                 <Text style={{ color: "#fff", marginLeft: 4 }}>{item.dub}</Text>
               </View>
             )}

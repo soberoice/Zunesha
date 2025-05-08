@@ -120,11 +120,15 @@ const AnimeDetails = ({ route }) => {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
-        <ImageBackground style={styles.image} source={{ uri: data?.image }}>
+        <ImageBackground
+          style={styles.image}
+          source={{ uri: anilist?.cover || data?.image }}
+        >
           <LinearGradient
             colors={["transparent", "#001"]}
-            start={{ x: 0.5, y: 1 }}
+            start={{ x: 0.5, y: 0.7 }}
             end={{ x: 0.5, y: 0 }}
+            style={{ height: 55 }}
           >
             <TouchableOpacity onPress={() => navigation.goBack()}>
               <Icon
@@ -141,6 +145,12 @@ const AnimeDetails = ({ route }) => {
             end={{ x: 0.5, y: 1 }}
             style={styles.slide}
           >
+            <View style={{ alignItems: "center", paddingTop: 20 }}>
+              <Image
+                style={{ width: 125, height: 175 }}
+                source={{ uri: anilist?.image || data?.image }}
+              />
+            </View>
             <View
               style={{
                 flexDirection: "row",
@@ -148,10 +158,15 @@ const AnimeDetails = ({ route }) => {
                 justifyContent: "space-between",
                 width: "90%",
                 gap: 10,
+                position: "absolute",
+                bottom: 0,
+                left: 10,
               }}
             >
               <View style={{ width: "90%" }}>
-                <Text style={styles.text}>{data?.title}</Text>
+                <Text style={styles.text} numberOfLines={1}>
+                  {data?.title}
+                </Text>
                 <View
                   style={{
                     flexDirection: "row",
@@ -239,12 +254,18 @@ const AnimeDetails = ({ route }) => {
         <View
           style={{ width: "100%", justifyContent: "center", minHeight: 35 }}
         >
-          {anilist?.nextAiringEpisode && (
+          {anilist?.nextAiringEpisode ? (
             <Text
               style={{ color: "#32a88b", fontWeight: "bold", paddingLeft: 10 }}
             >
               Episode {anilist?.nextAiringEpisode?.episode} Estimated Release
               Time: {getTime(anilist?.nextAiringEpisode?.airingTime)}
+            </Text>
+          ) : (
+            <Text
+              style={{ color: "#32a88b", fontWeight: "bold", paddingLeft: 10 }}
+            >
+              No Estimated Release Date
             </Text>
           )}
         </View>
@@ -323,15 +344,13 @@ const AnimeDetails = ({ route }) => {
         </View>
         <View style={{ height: 300, alignItems: "center" }}>
           {tab === "Episodes" && data?.episodes?.length > 0 && (
-            <React.Suspense
-              fallback={
-                <Text>
-                  <ActivityIndicator color="#32a88b" />
-                </Text>
-              }
-            >
-              <AnimeDetailsEpList ep={data.episodes} image={data?.image} />
-            </React.Suspense>
+            <AnimeDetailsEpList
+              ep={data.episodes}
+              image={data?.image}
+              hasDub={data.hasDub}
+              hasSub={data.hasSub}
+              cover={anilist?.cover || data?.image}
+            />
           )}
           {tab === "Related" && (
             <Slidinglist data={data?.relatedAnime} limit={15} />
@@ -419,7 +438,7 @@ const styles = StyleSheet.create({
     color: "white",
     padding: 10,
     alignItems: "left",
-    height: "full",
+    height: "100%",
     width: "100%",
   },
   btn2: {
@@ -432,17 +451,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "bold",
     textAlign: "center",
-  },
-  tabs: {
-    color: "#fff",
-    fontSize: 20,
-    fontWeight: "700",
-    padding: 10,
-    marginTop: 10,
-    marginLeft: 10,
-    marginBottom: 10,
-    borderBottomWidth: 2,
-    borderBottomColor: "#32a88b",
   },
   tabs: {
     color: "#fff",

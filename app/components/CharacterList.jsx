@@ -50,9 +50,9 @@ const CharacterList = ({ characters }) => {
           Characters
         </Text>
       </View>
-      {characters?.slice(start, end).map((char) => (
+      {characters?.slice(start, end).map((char, index) => (
         <View
-          key={char?.id}
+          key={index}
           style={{
             width: "95%",
             height: 70,

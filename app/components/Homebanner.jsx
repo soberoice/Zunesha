@@ -39,9 +39,8 @@ const Homebanner = () => {
   }, []);
   const fetchMaindetails = async (id) => {
     try {
-      const response = await fetch(
-        `https://consapi-chi.vercel.app/anime/zoro/info?id=${id}`
-      );
+      const apiUrl = process.env.EXPO_PUBLIC_API_URL;
+      const response = await fetch(`${apiUrl}/anime/zoro/info?id=${id}`);
       const json = await response.json();
       console.log("mainData: ", json);
       addToWatchList(json);

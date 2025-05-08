@@ -7,33 +7,49 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigation } from "expo-router";
 import DropDownPicker from "react-native-dropdown-picker";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
 // Helper function to split array into chunks of 40
-const splitIntoChunks = (array) => {
+const splitIntoChunks = (array, isDub) => {
   const result = [];
-  for (let i = 0; i < array.length; i += 100) {
-    result.push(array.slice(i, i + 100));
+
+  // Choose the correct array to split
+  const episodesToSplit = isDub
+    ? array.filter((episode) => episode.isDubbed === true)
+    : array;
+
+  // Split the chosen array into chunks of 100
+  for (let i = 0; i < episodesToSplit.length; i += 100) {
+    result.push(episodesToSplit.slice(i, i + 100));
   }
+
   return result;
 };
 
-const EpisodeList = ({ ep, image, currentEp }) => {
+const EpisodeList = ({ ep, image, currentEp, isDub, hasSub, hasDub }) => {
   const navigation = useNavigation();
-  const chunks = splitIntoChunks(ep);
+  const [chunks, setChunks] = useState(splitIntoChunks(ep));
   const [epList, setEpList] = useState(1);
   const [searchInput, setSearchInput] = useState("");
   const [open, setOpen] = useState(false);
   const searchIcon = <Icon name="search" size={20} color={"#32a88b"} />;
   const page = <Icon name="list" size={20} color={"#32a88b"} />;
-  const dropdownItems = chunks.map((chunk, index) => ({
-    label: `${chunk[0]?.number}-${chunk[chunk?.length - 1]?.number}`,
-    value: index + 1,
-  }));
+  const [dropdownItems, setDropDownItems] = useState();
+  useEffect(() => {
+    const newChunks = splitIntoChunks(ep, isDub);
+    setChunks(splitIntoChunks(ep, isDub));
+    console.log(isDub);
+    setDropDownItems(
+      newChunks.map((chunk, index) => ({
+        label: `${chunk[0]?.number}-${chunk[chunk?.length - 1]?.number}`,
+        value: index + 1,
+      }))
+    );
+  }, [isDub]);
 
   function search() {
     const filteredEp = ep.filter(
@@ -53,6 +69,9 @@ const EpisodeList = ({ ep, image, currentEp }) => {
             title: filteredEp[0].title,
             number: filteredEp[0].number,
             cover: image,
+            hasDub: hasDub,
+            hasSub: hasSub,
+            episodeHasDub: filteredEp[0]?.isDubbed,
           })
         }
       >
@@ -173,6 +192,9 @@ const EpisodeList = ({ ep, image, currentEp }) => {
                       title: item.title,
                       number: item.number,
                       cover: image,
+                      hasDub: hasDub,
+                      hasSub: hasSub,
+                      episodeHasDub: item?.isDubbed,
                     })
                   }
                 >
@@ -200,7 +222,7 @@ const styles = StyleSheet.create({
     gap: 5,
     zIndex: 0,
     width: "100%",
-    paddingBottom: 500,
+    paddingBottom: 550,
   },
   btn: {
     backgroundColor: "#32a88b",

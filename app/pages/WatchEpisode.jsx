@@ -5,6 +5,7 @@ import {
   StatusBar,
   StyleSheet,
   Text,
+  ToastAndroid,
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
@@ -28,7 +29,9 @@ function usePrevious(value) {
   return ref.current;
 }
 const WatchEpisode = ({ route }) => {
-  const { id, ep, title, number, cover } = route.params;
+  const { id, ep, title, number, cover, hasSub, hasDub, episodeHasDub } =
+    route.params;
+  const [isDub, setIsDub] = useState(false);
   const [data, setData] = useState();
   const [loading, setLoading] = useState(false);
   const video = useRef(null);
@@ -172,7 +175,9 @@ const WatchEpisode = ({ route }) => {
       setData();
       setLoading(true);
       const apiUrl = process.env.EXPO_PUBLIC_API_URL;
-      const response = await fetch(`${apiUrl}/anime/zoro/watch/${id}`);
+      const response = await fetch(
+        `${apiUrl}/anime/zoro/watch/${id}?dub=${isDub}`
+      );
       const res = await response.json();
       setData(res);
     } catch (error) {
@@ -188,7 +193,18 @@ const WatchEpisode = ({ route }) => {
     fetchData();
     setSubtitleIndex(undefined);
   }, [id]);
-
+  useEffect(() => {
+    if (isDub && episodeHasDub) {
+      fetchData();
+      setSubtitleIndex(undefined);
+    } else if (isDub && !episodeHasDub) {
+      setIsDub(false);
+      ToastAndroid.show(
+        `Episode ${number} not available in dub`,
+        ToastAndroid.SHORT
+      );
+    }
+  }, [isDub]);
   useEffect(() => {
     if (
       prevSubIndex !== englishIndex &&
@@ -368,7 +384,7 @@ const WatchEpisode = ({ route }) => {
                 subtitleStyle={{
                   paddingBottom: 25,
                   fontSize: 15,
-                  opacity: 0.8,
+                  opacity: isDub ? 0 : 0.8,
                 }}
                 poster={{
                   source: { uri: cover },
@@ -530,8 +546,59 @@ const WatchEpisode = ({ route }) => {
       ) : (
         <View></View>
       )}
+      <View
+        style={{
+          flexDirection: "row",
+          width: Dimensions.get("window").width,
+          alignItems: "center",
+        }}
+      >
+        {hasSub && (
+          <TouchableOpacity
+            style={{ width: "50%" }}
+            onPress={() => setIsDub(false)}
+          >
+            <Text
+              style={[
+                styles.tabs,
+                {
+                  borderBottomColor: !isDub ? "#32a88b" : "transparent",
+                  opacity: !isDub ? 1 : 0.5,
+                },
+              ]}
+            >
+              Sub
+            </Text>
+          </TouchableOpacity>
+        )}
+        {hasDub && (
+          <TouchableOpacity
+            style={{ width: "50%" }}
+            onPress={() => setIsDub(true)}
+          >
+            <Text
+              style={[
+                styles.tabs,
+                {
+                  borderBottomColor: isDub ? "#32a88b" : "#fff",
+                  opacity: isDub ? 1 : 0.5,
+                },
+              ]}
+            >
+              Dub
+            </Text>
+          </TouchableOpacity>
+        )}
+      </View>
       <View style={{ paddingVertical: 10 }}>
-        <EpisodeList ep={ep} image={cover} currentEp={number} />
+        <EpisodeList
+          ep={ep}
+          image={cover}
+          currentEp={number}
+          isDub={isDub}
+          hasSub={hasSub}
+          hasDub={hasDub}
+        />
       </View>
       {isVideoReady && (
         <VideoSettings
@@ -570,6 +637,17 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 15,
     zIndex: 999,
+  },
+  tabs: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "700",
+    padding: 10,
+    marginTop: 10,
+    marginBottom: 10,
+    borderBottomWidth: 2,
+    width: "100%",
+    textAlign: "center",
   },
 });
 

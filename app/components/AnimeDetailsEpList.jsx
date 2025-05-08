@@ -17,7 +17,7 @@ import {
 } from "react-native-gesture-handler";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
-const AnimeDetailsEpList = ({ ep, image }) => {
+const AnimeDetailsEpList = ({ ep, image, hasDub, hasSub, cover }) => {
   const navigation = useNavigation();
 
   const [searchInput, setSearchInput] = useState("");
@@ -42,7 +42,10 @@ const AnimeDetailsEpList = ({ ep, image }) => {
               ep: ep,
               title: item?.title,
               number: item?.number,
-              cover: image,
+              cover: cover,
+              hasSub: hasSub,
+              hasDub: hasDub,
+              episodeHasDub: item?.isDubbed,
             })
           }
         >
@@ -114,14 +117,13 @@ const AnimeDetailsEpList = ({ ep, image }) => {
                 onPress={() =>
                   navigation.navigate("watchepisode", {
                     id: item.id,
-
                     ep: ep,
-
                     title: item.title,
-
                     number: item.number,
-
-                    cover: image,
+                    cover: cover,
+                    hasDub: hasDub,
+                    hasSub: hasSub,
+                    episodeHasDub: item.isDubbed,
                   })
                 }
               >
