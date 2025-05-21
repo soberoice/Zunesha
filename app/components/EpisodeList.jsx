@@ -55,7 +55,9 @@ const EpisodeList = ({ ep, image, currentEp, isDub, hasSub, hasDub }) => {
     const filteredEp = ep.filter(
       (episode) => episode.number.toString() === searchInput
     );
-
+    const nextEp = ep.filter(
+      (episode) => episode.number.toString() === searchInput + 1
+    );
     if (!filteredEp[0]) return null;
 
     return (
@@ -72,6 +74,7 @@ const EpisodeList = ({ ep, image, currentEp, isDub, hasSub, hasDub }) => {
             hasDub: hasDub,
             hasSub: hasSub,
             episodeHasDub: filteredEp[0]?.isDubbed,
+            nextEpisode: nextEp[0]?.id,
           })
         }
       >
@@ -179,13 +182,15 @@ const EpisodeList = ({ ep, image, currentEp, isDub, hasSub, hasDub }) => {
         >
           {searchInput
             ? search()
-            : chunks[epList - 1]?.map((item) => (
+            : chunks[epList - 1]?.map((item, index) => (
                 <TouchableOpacity
                   style={
                     item?.number === currentEp ? styles.active : styles.btn
                   }
                   key={item?.id}
-                  onPress={() =>
+                  onPress={() => {
+                    const fullIndex = ep.findIndex((e) => e.id === item.id);
+                    const nextEpisode = ep[fullIndex + 1]?.id;
                     navigation.navigate("watchepisode", {
                       id: item.id,
                       ep: ep,
@@ -195,8 +200,9 @@ const EpisodeList = ({ ep, image, currentEp, isDub, hasSub, hasDub }) => {
                       hasDub: hasDub,
                       hasSub: hasSub,
                       episodeHasDub: item?.isDubbed,
-                    })
-                  }
+                      nextEpisode: nextEpisode,
+                    });
+                  }}
                 >
                   <Text
                     style={{

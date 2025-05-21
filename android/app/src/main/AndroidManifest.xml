@@ -27,6 +27,7 @@
         <data android:scheme="zunisha"/>
         <data android:scheme="com.anonymous.app"/>
         <data android:scheme="exp+app"/>
+        <data android:scheme="zunesha"/>
       </intent-filter>
     </activity>
   </application>

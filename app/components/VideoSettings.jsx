@@ -1,11 +1,12 @@
 import {
   Animated,
   StyleSheet,
+  Switch,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   GestureHandlerRootView,
   ScrollView,
@@ -17,6 +18,9 @@ const VideoSettings = ({
   subtileTracks,
   subtitleIndex,
   setSubtitleIndex,
+  skipIntro,
+  setSkipIntro,
+  skipIntroFunc,
 }) => {
   const slideAnim = useRef(new Animated.Value(0)).current;
 
@@ -24,7 +28,7 @@ const VideoSettings = ({
     Animated.timing(slideAnim, {
       toValue: toggleSettings ? 1 : 0,
       duration: 300,
-      useNativeDriver: false, // must be false to animate height
+      useNativeDriver: false,
     }).start();
   }, [toggleSettings]);
 
@@ -32,6 +36,14 @@ const VideoSettings = ({
     inputRange: [0, 1],
     outputRange: [0, 300],
   });
+  const isEnabled = skipIntro;
+
+  const toggleSwitch = () => {
+    const newSkipState = !skipIntro;
+    setSkipIntro(newSkipState);
+    console.log("skipIntro", newSkipState);
+    skipIntroFunc(newSkipState);
+  };
 
   return (
     <GestureHandlerRootView style={toggleSettings ? styles.overlay : null}>
@@ -47,6 +59,27 @@ const VideoSettings = ({
           scrollEnabled={true}
           contentContainerStyle={styles.scrollContent}
         >
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <View>
+              <Text style={styles.subtitleLabel}>Skip Intro</Text>
+              <Text style={{ color: "#32a88b" }}>
+                {isEnabled ? "ON" : "OFF"}
+              </Text>
+            </View>
+            <Switch
+              trackColor={{ false: "#767577", true: "#32a88b" }}
+              thumbColor={skipIntro ? "#32a88b" : "#fff"}
+              ios_backgroundColor="#3e3e3e"
+              onValueChange={toggleSwitch}
+              value={skipIntro}
+            />
+          </View>
           <Text style={styles.subtitleLabel}>Subtitles</Text>
           <View style={styles.subtitleWrapper}>
             {subtileTracks?.map((track, index) => (
@@ -112,6 +145,8 @@ const styles = StyleSheet.create({
     bottom: 0,
     zIndex: 11,
     overflow: "hidden",
+    padding: 10,
+    gap: 10,
   },
   title: {
     color: "#fff",

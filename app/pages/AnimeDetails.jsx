@@ -107,8 +107,7 @@ const AnimeDetails = ({ route }) => {
     }
   }, [data]);
 
-  const trailerLink = `${metaData?.trailer?.site}${metaData?.trailer?.id}`;
-  if (!data && loading) {
+  if (loading || !metaData || !anilist) {
     return (
       <View style={styles.container}>
         <Text>
@@ -130,7 +129,10 @@ const AnimeDetails = ({ route }) => {
             end={{ x: 0.5, y: 0 }}
             style={{ height: 55 }}
           >
-            <TouchableOpacity onPress={() => navigation.goBack()}>
+            <TouchableOpacity
+              style={{ zIndex: 100 }}
+              onPress={() => navigation.goBack()}
+            >
               <Icon
                 style={{ padding: 10 }}
                 name="keyboard-backspace"
@@ -343,7 +345,7 @@ const AnimeDetails = ({ route }) => {
           </TouchableOpacity>
         </View>
         <View style={{ height: 300, alignItems: "center" }}>
-          {tab === "Episodes" && data?.episodes?.length > 0 && (
+          {tab === "Episodes" && data?.episodes?.length > 0 && metaData && (
             <AnimeDetailsEpList
               ep={data.episodes}
               image={data?.image}

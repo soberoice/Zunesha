@@ -29,9 +29,19 @@ function usePrevious(value) {
   return ref.current;
 }
 const WatchEpisode = ({ route }) => {
-  const { id, ep, title, number, cover, hasSub, hasDub, episodeHasDub } =
-    route.params;
+  const {
+    id,
+    ep,
+    title,
+    number,
+    cover,
+    hasSub,
+    hasDub,
+    episodeHasDub,
+    nextEpisode,
+  } = route.params;
   const [isDub, setIsDub] = useState(false);
+  const [episodeId, setEpisodeId] = useState(id);
   const [data, setData] = useState();
   const [loading, setLoading] = useState(false);
   const video = useRef(null);
@@ -44,10 +54,6 @@ const WatchEpisode = ({ route }) => {
     isPlaying: false,
     isSeeking: false,
   });
-  const [selectedSubtitleTrack, setSelectedSubtitleTrack] = useState({
-    type: "index",
-    value: 0,
-  });
   const [overlayVisible, setOverlayVisible] = useState(true);
   const [isVideoReady, setIsVideoReady] = useState(false);
   const [NullSubtitleIndex, setNullSubtitleIndex] = useState(0);
@@ -56,6 +62,7 @@ const WatchEpisode = ({ route }) => {
   const timeoutRef = useRef(null);
   const videoSource = data?.sources[0]?.url;
   const [isMute, setIsMute] = useState(false);
+  const [skipIntro, setSkipIntro] = useState(false);
   const [playerDimensions, setPlayerDimensions] = useState({
     width: 0,
     height: 0,
@@ -134,10 +141,22 @@ const WatchEpisode = ({ route }) => {
       StatusBar.setHidden(false, "fade");
     }
   };
+  function skipIntroFunc(skip) {
+    if (
+      currentTime >= data?.intro?.start &&
+      currentTime < data?.intro?.end &&
+      skip
+    ) {
+      video.current.seek(data?.intro?.end);
+    }
+  }
+  useEffect(() => {
+    skipIntroFunc(skipIntro);
+  }, [currentTime, skipIntro]);
 
   useEffect(() => {
     if (isFullScreen) {
-      SystemUI.setBackgroundColorAsync("#000"); // Makes bar black if visible
+      SystemUI.setBackgroundColorAsync("#000");
     } else {
       SystemUI.setBackgroundColorAsync("#000");
     }
@@ -176,10 +195,12 @@ const WatchEpisode = ({ route }) => {
       setLoading(true);
       const apiUrl = process.env.EXPO_PUBLIC_API_URL;
       const response = await fetch(
-        `${apiUrl}/anime/zoro/watch/${id}?dub=${isDub}`
+        `${apiUrl}/anime/zoro/watch/${episodeId}?dub=${isDub}`
       );
       const res = await response.json();
       setData(res);
+      console.log("current epId", id);
+      console.log("next epId", nextEpisode);
     } catch (error) {
       console.error("Fetch error:", error);
     } finally {
@@ -352,6 +373,7 @@ const WatchEpisode = ({ route }) => {
                 }}
                 progressUpdateInterval={1000}
                 onPlaybackStateChanged={handlePlaybackStateChange}
+                onBuffer={({ isBuffering }) => setIsVideoReady(!isBuffering)}
                 onLoad={({ duration, textTracks }) => {
                   setDuration(duration);
                   setIsVideoReady(true);
@@ -602,11 +624,14 @@ const WatchEpisode = ({ route }) => {
       </View>
       {isVideoReady && (
         <VideoSettings
+          skipIntro={skipIntro}
+          setSkipIntro={setSkipIntro}
           toggleSettings={toggleSettings}
           setToggleSettings={setToggleSettings}
           setSubtitleIndex={setSubtitleIndex}
           subtileTracks={subtitleTracks}
           subtitleIndex={subtitleIndex}
+          skipIntroFunc={skipIntroFunc}
         />
       )}
     </View>

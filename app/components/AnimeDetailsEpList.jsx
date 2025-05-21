@@ -28,7 +28,6 @@ const AnimeDetailsEpList = ({ ep, image, hasDub, hasSub, cover }) => {
         episode.number.toString() === searchInput ||
         episode.title.toLowerCase().includes(searchInput.toLowerCase())
     );
-
     console.log(filteredEp.number);
 
     return filteredEp.length ? (
@@ -46,6 +45,9 @@ const AnimeDetailsEpList = ({ ep, image, hasDub, hasSub, cover }) => {
               hasSub: hasSub,
               hasDub: hasDub,
               episodeHasDub: item?.isDubbed,
+              nextEpisode: ep.filter(
+                (episode) => episode.number.toString() === item.number + 1
+              )[0]?.id,
             })
           }
         >
@@ -110,7 +112,7 @@ const AnimeDetailsEpList = ({ ep, image, hasDub, hasSub, cover }) => {
       >
         {searchInput
           ? search()
-          : ep?.slice(0, 26).map((item) => (
+          : ep?.slice(0, 26).map((item, index) => (
               <TouchableOpacity
                 style={styles.btn}
                 key={item?.number}
@@ -124,6 +126,7 @@ const AnimeDetailsEpList = ({ ep, image, hasDub, hasSub, cover }) => {
                     hasDub: hasDub,
                     hasSub: hasSub,
                     episodeHasDub: item.isDubbed,
+                    nextEpisode: ep[index + 1]?.id,
                   })
                 }
               >
