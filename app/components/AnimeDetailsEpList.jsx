@@ -1,5 +1,6 @@
 import {
   Image,
+  ImageBackground,
   StyleSheet,
   Text,
   TextInput,
@@ -16,6 +17,7 @@ import {
   GestureHandlerRootView,
 } from "react-native-gesture-handler";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import { LinearGradient } from "expo-linear-gradient";
 
 const AnimeDetailsEpList = ({ ep, image, hasDub, hasSub, cover }) => {
   const navigation = useNavigation();
@@ -53,16 +55,24 @@ const AnimeDetailsEpList = ({ ep, image, hasDub, hasSub, cover }) => {
         >
           <Image style={styles.image} source={{ uri: image }} />
           <Icon
-            name="play-circle"
+            name="play-arrow"
             size={35}
             color={"#32a88b"}
             style={styles.playbtn}
           />
           <Text
             numberOfLines={3}
-            style={{ color: "#32a88b", fontWeight: "bold" }}
+            style={{
+              color: "#fff",
+              fontWeight: "bold",
+              fontSize: 13,
+              position: "absolute",
+              bottom: 0,
+              left: 0,
+              padding: 5,
+            }}
           >
-            Episode {item?.number}: {item?.title}
+            Episode {item?.number}
           </Text>
         </TouchableOpacity>
       ))
@@ -82,27 +92,26 @@ const AnimeDetailsEpList = ({ ep, image, hasDub, hasSub, cover }) => {
             alignItems: "center",
             width: "90%",
             flexDirection: "row",
-            borderWidth: 1,
-            borderColor: "#32a88b",
-            borderRadius: 5,
+            borderRadius: 50,
             justifyContent: "center",
+            backgroundColor: "#000",
+            paddingHorizontal: 10,
           }}
         >
-          <View
-            style={{
-              width: "15%",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Icon name="search" color={"#32a88b"} size={30} />
-          </View>
           <TextInput
             onChangeText={(text) => setSearchInput(text)}
             placeholder="Search Episode"
             placeholderTextColor={"#32a88b"}
             style={styles.searchBar}
           />
+          <View
+            style={{
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Icon name="search" color={"#32a88b"} size={30} />
+          </View>
         </View>
       </View>
       <ScrollView
@@ -114,7 +123,7 @@ const AnimeDetailsEpList = ({ ep, image, hasDub, hasSub, cover }) => {
           ? search()
           : ep?.slice(0, 26).map((item, index) => (
               <TouchableOpacity
-                style={styles.btn}
+                style={[styles.btn, { height: 100 }]}
                 key={item?.number}
                 onPress={() =>
                   navigation.navigate("watchepisode", {
@@ -130,18 +139,37 @@ const AnimeDetailsEpList = ({ ep, image, hasDub, hasSub, cover }) => {
                   })
                 }
               >
-                <Image style={styles.image} source={{ uri: image }} />
+                <ImageBackground
+                  borderRadius={5}
+                  source={{ uri: cover }}
+                  style={styles.image}
+                >
+                  <LinearGradient
+                    colors={["transparent", "#1a1a1a"]}
+                    start={{ x: 0.5, y: 0.4 }}
+                    end={{ x: 0.5, y: 1 }}
+                    style={styles.slide}
+                  ></LinearGradient>
+                </ImageBackground>
                 <Icon
-                  name="play-circle"
-                  size={35}
+                  name="play-arrow"
+                  size={30}
                   color={"#32a88b"}
                   style={styles.playbtn}
                 />
                 <Text
                   numberOfLines={3}
-                  style={{ color: "#32a88b", fontWeight: "bold", fontSize: 13 }}
+                  style={{
+                    color: "#fff",
+                    fontWeight: "bold",
+                    fontSize: 13,
+                    position: "absolute",
+                    bottom: 0,
+                    left: 0,
+                    padding: 5,
+                  }}
                 >
-                  Episode {item?.number}: {item.title}
+                  Episode {item?.number}
                 </Text>
               </TouchableOpacity>
             ))}
@@ -180,26 +208,28 @@ const styles = StyleSheet.create({
   },
 
   btn: {
-    paddingVertical: 10,
     marginHorizontal: 5,
     width: 150,
     alignItems: "left",
+    marginTop: 10,
   },
 
   searchBar: {
     width: "85%",
-    color: "#fff",
+    color: "#32a88b",
     height: 50,
   },
   image: {
     width: 150,
     height: 100,
     borderRadius: 5,
-    opacity: 0.8,
   },
   playbtn: {
     position: "absolute",
-    top: 40,
-    right: 60,
+    bottom: 0,
+    right: 0,
+  },
+  slide: {
+    height: "100%",
   },
 });

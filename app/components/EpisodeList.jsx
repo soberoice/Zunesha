@@ -126,7 +126,7 @@ const EpisodeList = ({ ep, image, currentEp, isDub, hasSub, hasDub }) => {
             setValue={setEpList}
             setItems={() => {}}
             style={{
-              backgroundColor: "#000",
+              backgroundColor: "#1f1f1f",
               borderColor: "transparent",
               width: "100%",
             }}
@@ -134,7 +134,7 @@ const EpisodeList = ({ ep, image, currentEp, isDub, hasSub, hasDub }) => {
               color: "#32a88b",
             }}
             dropDownContainerStyle={{
-              backgroundColor: "#001",
+              backgroundColor: "#1f1f1f",
               borderColor: "transparent",
               width: "100%",
             }}
@@ -151,12 +151,14 @@ const EpisodeList = ({ ep, image, currentEp, isDub, hasSub, hasDub }) => {
         </View>
         <View
           style={{
-            width: "35%",
+            width: "40%",
             flexDirection: "row",
             borderWidth: 1,
             alignItems: "center",
-            borderRadius: 5,
+            borderRadius: 50,
             gap: 2,
+            backgroundColor: "#000",
+            paddingHorizontal: 10,
           }}
         >
           <Text>{searchIcon}</Text>

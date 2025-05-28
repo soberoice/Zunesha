@@ -6,7 +6,11 @@ const GenreTagList = ({ genres }) => {
   const navigation = useNavigation();
   return (
     <View
-      style={{ flexDirection: "row", flexWrap: "wrap", marginHorizontal: 5 }}
+      style={{
+        flexDirection: "row",
+        flexWrap: "wrap",
+        marginHorizontal: 5,
+      }}
     >
       {genres?.map((genre, index) => (
         <TouchableOpacity

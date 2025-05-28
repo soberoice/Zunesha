@@ -7,14 +7,12 @@ import {
 } from "react-native-gesture-handler";
 import { useNavigation } from "expo-router";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import AnimeList from "../components/AnimeList";
 import Pagination from "../components/Pagination";
 import HorizontalAnimeList from "../components/HorizontalAnimeList";
 
 const Searchscreen = () => {
   const [searchInput, setSearchInput] = useState();
   const [searchResults, setSearchResults] = useState();
-  const [placeholder, setPlaceholder] = useState();
   const [totalPages, setTotalPages] = useState();
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
@@ -60,13 +58,26 @@ const Searchscreen = () => {
               size={30}
             />
           </TouchableOpacity>
-          <TextInput
-            onChangeText={(text) => setSearchInput(text)}
-            placeholder="Search Anime"
-            placeholderTextColor={"#32a88b"}
-            style={styles.searchBar}
-            onSubmitEditing={() => fetchData()}
-          />
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              width: "80%",
+              backgroundColor: "#000",
+              borderRadius: 50,
+              paddingHorizontal: 15,
+              boxShadow: "0px 5px 20px black",
+            }}
+          >
+            <TextInput
+              onChangeText={(text) => setSearchInput(text)}
+              placeholder="Search Anime"
+              placeholderTextColor={"#32a88b"}
+              style={styles.searchBar}
+              onSubmitEditing={() => fetchData()}
+            />
+            <Icon name="search" color={"#32a88b"} size={30} />
+          </View>
         </View>
         {!loading ? (
           searchResults && (
@@ -110,12 +121,9 @@ const styles = StyleSheet.create({
   },
   searchBar: {
     width: "80%",
-    borderWidth: 1,
-    borderColor: "#32a88b",
-    borderRadius: 5,
-    color: "#fff",
+    borderRadius: 50,
+    color: "#32a88b",
     height: 50,
-    paddingHorizontal: 10,
     marginHorizontal: "auto",
   },
 });

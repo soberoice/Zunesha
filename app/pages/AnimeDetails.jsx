@@ -35,13 +35,38 @@ const AnimeDetails = ({ route }) => {
   const [metaData, setMetaData] = useState();
   const [anilist, setAnilist] = useState();
   const navigation = useNavigation();
+  const [remainingSeconds, setRemainingSeconds] = useState(null);
 
-  function getTime(time) {
-    const timestamp = time; // Unix timestamp in seconds
-    const date = new Date(timestamp * 1000); // Convert to milliseconds
-    const formattedDate = date.toLocaleString(); // You can customize this format
-    return formattedDate;
+  useEffect(() => {
+    if (remainingSeconds === null) return;
+
+    const timer = setInterval(() => {
+      setRemainingSeconds((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [remainingSeconds]);
+  function getTime(seconds) {
+    const days = Math.floor(seconds / (3600 * 24));
+    const hrs = Math.floor((seconds % (3600 * 24)) / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+
+    const time = {
+      d: String(days).padStart(2, "0"),
+      h: String(hrs).padStart(2, "0"),
+      m: String(mins).padStart(2, "0"),
+      s: String(secs).padStart(2, "0"),
+    };
+    return time;
   }
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -72,12 +97,7 @@ const AnimeDetails = ({ route }) => {
           console.log("MAL Id: ", data.malID);
           const metaRes = await meta.json();
           setMetaData(metaRes);
-          console.log("meta data: ", metaRes);
-          console.log(
-            "trailer link: ",
-            `${metaData?.trailer?.site}${metaData?.trailer?.id}`
-          );
-          console.log("trailer thumbnail: ", `${metaData?.trailer?.thumbnail}`);
+          // console.log("meta data: ", metaRes);
         } catch (error) {
           console.log("error fetching meta data: ", error);
         }
@@ -92,12 +112,8 @@ const AnimeDetails = ({ route }) => {
           console.log("anilist id: ", data.alID);
           const metaRes = await meta.json();
           setAnilist(metaRes);
-          console.log("meta data: ", metaRes);
-          console.log(
-            "trailer link: ",
-            `${metaData?.trailer?.site}${metaData?.trailer?.id}`
-          );
-          console.log("trailer thumbnail: ", `${metaData?.trailer?.thumbnail}`);
+          // console.log("meta data: ", metaRes);
+          setRemainingSeconds(metaRes?.nextAiringEpisode?.timeUntilAiring);
         } catch (error) {
           console.log("error fetching meta data: ", error);
         }
@@ -147,12 +163,6 @@ const AnimeDetails = ({ route }) => {
             end={{ x: 0.5, y: 1 }}
             style={styles.slide}
           >
-            <View style={{ alignItems: "center", paddingTop: 20 }}>
-              <Image
-                style={{ width: 125, height: 175 }}
-                source={{ uri: anilist?.image || data?.image }}
-              />
-            </View>
             <View
               style={{
                 flexDirection: "row",
@@ -235,35 +245,134 @@ const AnimeDetails = ({ route }) => {
                   )}
                 </View>
               </View>
-              <TouchableOpacity
-                style={styles.btn2}
-                onPress={() => addToWatchList(data)}
-              >
-                <Text>
-                  {data && (
-                    <Icon
-                      name={isInWatchList ? "bookmark-added" : "bookmark-add"}
-                      size={30}
-                      color={isInWatchList ? "#32a88b" : "#fff"}
-                    />
-                  )}
-                </Text>
-              </TouchableOpacity>
+              {data && (
+                <TouchableOpacity
+                  onPress={() => addToWatchList(data)}
+                  style={styles.btn2}
+                >
+                  <Icon
+                    name={!inWatchList(data?.id) ? "add" : "remove"}
+                    size={20}
+                    color={"#fff"}
+                  />
+                </TouchableOpacity>
+              )}
             </View>
           </LinearGradient>
         </ImageBackground>
         <GenreTagList genres={data?.genres} />
         <View
-          style={{ width: "100%", justifyContent: "center", minHeight: 35 }}
+          style={{
+            width: "100%",
+            justifyContent: "center",
+            minHeight: 40,
+            alignItems: "center",
+            marginTop: 10,
+          }}
         >
           {anilist?.nextAiringEpisode ? (
-            <Text
-              style={{ color: "#32a88b", fontWeight: "bold", paddingLeft: 10 }}
+            <View
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-evenly",
+                width: "90%",
+                backgroundColor: "#000",
+                marginHorizontal: "auto",
+                borderRadius: 50,
+                height: 60,
+              }}
             >
-              Episode {anilist?.nextAiringEpisode?.episode} Estimated Release
-              Time: {getTime(anilist?.nextAiringEpisode?.airingTime)}
-            </Text>
+              <View
+                style={{
+                  color: "#32a88b",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  width: 30,
+                }}
+              >
+                <Text
+                  style={{ color: "#32a88b", fontSize: 15, fontWeight: "700" }}
+                >
+                  {getTime(remainingSeconds).d}
+                </Text>
+                <Text
+                  style={{ color: "#32a88b", lineHeight: 15, fontSize: 10 }}
+                >
+                  days
+                </Text>
+              </View>
+              <Text style={{ color: "#32a88b" }}>:</Text>
+              <View
+                style={{
+                  color: "#32a88b",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  width: 30,
+                }}
+              >
+                <Text
+                  style={{ color: "#32a88b", fontSize: 15, fontWeight: "700" }}
+                >
+                  {getTime(remainingSeconds).h}
+                </Text>
+                <Text
+                  style={{ color: "#32a88b", lineHeight: 15, fontSize: 10 }}
+                >
+                  hrs
+                </Text>
+              </View>
+              <Text style={{ color: "#32a88b" }}>:</Text>
+              <View
+                style={{
+                  color: "#32a88b",
+                  width: 30,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Text
+                  style={{ color: "#32a88b", fontSize: 15, fontWeight: "700" }}
+                >
+                  {getTime(remainingSeconds).m}
+                </Text>
+                <Text
+                  style={{ color: "#32a88b", lineHeight: 15, fontSize: 10 }}
+                >
+                  min
+                </Text>
+              </View>
+              <Text style={{ color: "#32a88b" }}>:</Text>
+              <View
+                style={{
+                  color: "#32a88b",
+                  width: 30,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Text
+                  style={{ color: "#32a88b", fontSize: 15, fontWeight: "700" }}
+                >
+                  {getTime(remainingSeconds).s}
+                </Text>
+                <Text
+                  style={{ color: "#32a88b", lineHeight: 15, fontSize: 10 }}
+                >
+                  sec
+                </Text>
+              </View>
+            </View>
           ) : (
+            // <Text
+            //   style={{ color: "#32a88b", fontWeight: "bold", paddingLeft: 10 }}
+            // >
+            //   Next Episode In:
+            //   {`${getTime(remainingSeconds).h} :${
+            //     getTime(remainingSeconds).m
+            //   }:${getTime(remainingSeconds).s}`}
+            // </Text>
             <Text
               style={{ color: "#32a88b", fontWeight: "bold", paddingLeft: 10 }}
             >
@@ -344,7 +453,7 @@ const AnimeDetails = ({ route }) => {
             </Text>
           </TouchableOpacity>
         </View>
-        <View style={{ height: 300, alignItems: "center" }}>
+        <View style={{ height: 250, alignItems: "center" }}>
           {tab === "Episodes" && data?.episodes?.length > 0 && metaData && (
             <AnimeDetailsEpList
               ep={data.episodes}
@@ -382,13 +491,15 @@ const AnimeDetails = ({ route }) => {
                   allowsFullscreenVideo: false,
                 }}
                 initialPlayerParams={{
-                  controls: 0, // Hide playback controls
+                  controls: false, // Hide playback controls
                   modestbranding: true, // Hide YouTube logo
                   showinfo: false, // Deprecated, but still safe
                   rel: false, // Disable related videos at end
                   fs: 0, // Disable fullscreen button
                   iv_load_policy: 0, // Hide annotations
                   loop: true,
+                  showClosedCaptions: true,
+                  playerLang: "english",
                 }}
               />
             </View>
@@ -444,9 +555,17 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   btn2: {
-    backgroundColor: "transparent",
-    borderRadius: 50,
+    backgroundColor: "rgba(0, 0, 0, 0.51)",
+    marginTop: 10,
     padding: 10,
+    borderRadius: 10,
+    borderColor: "#fff",
+    borderWidth: 1,
+    height: 45,
+    width: 45,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
   },
   btnText: {
     color: "#fff",

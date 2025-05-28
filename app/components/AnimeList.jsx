@@ -1,7 +1,15 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Image,
+  ImageBackground,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import React from "react";
 import Icon from "react-native-vector-icons/FontAwesome6";
 import { useNavigation } from "expo-router";
+import { LinearGradient } from "expo-linear-gradient";
 
 const AnimeList = ({ data }) => {
   const navigation = useNavigation();
@@ -19,69 +27,28 @@ const AnimeList = ({ data }) => {
                 fontWeight: "700",
                 fontSize: 12,
                 padding: 5,
-                borderRadius: 5,
                 position: "absolute",
-                color: item.nsfw ? "#fff" : "#000",
-                backgroundColor: item.nsfw ? "red" : "#fff",
-                left: 0,
+                color: "#fff",
+                right: 0,
                 zIndex: 1,
+                bottom: 0,
               }}
             >
               {item.nsfw ? "+18" : "PG-13"}
             </Text>
-            <Text
-              style={{
-                fontWeight: "700",
-                fontSize: 12,
-                padding: 5,
-                borderRadius: 5,
-                position: "absolute",
-                color: "#fff",
-                backgroundColor: "#32a88b",
-                right: 0,
-                zIndex: 1,
-              }}
-            >
-              {item.type}
-            </Text>
-            {item.sub && (
-              <View
-                style={{
-                  padding: 5,
-                  borderRadius: 5,
-                  position: "absolute",
-                  backgroundColor: "#32a88b",
-                  left: 0,
-                  zIndex: 1,
-                  bottom: 0,
-                  alignItems: "center",
-                  flexDirection: "row",
-                }}
-              >
-                <Icon name="closed-captioning" color={"#fff"} />
-                <Text style={{ color: "#fff", marginLeft: 4 }}>{item.sub}</Text>
-              </View>
-            )}
 
-            {item.dub > 0 && (
-              <View
-                style={{
-                  padding: 5,
-                  borderRadius: 5,
-                  position: "absolute",
-                  backgroundColor: "#32a88b",
-                  right: 0,
-                  zIndex: 1,
-                  bottom: 0,
-                  alignItems: "center",
-                  flexDirection: "row",
-                }}
-              >
-                <Icon name="microphone" color={"#fff"} />
-                <Text style={{ color: "#fff", marginLeft: 4 }}>{item.dub}</Text>
-              </View>
-            )}
-            <Image style={styles.image} source={{ uri: item.image }} />
+            <ImageBackground
+              borderRadius={5}
+              source={{ uri: item.image }}
+              style={styles.image}
+            >
+              <LinearGradient
+                colors={["transparent", "#1a1a1a"]}
+                start={{ x: 0.5, y: 0.8 }}
+                end={{ x: 0.5, y: 1 }}
+                style={styles.slide}
+              ></LinearGradient>
+            </ImageBackground>
             <Text numberOfLines={1} style={styles.text}>
               {item.title}
             </Text>
@@ -121,4 +88,7 @@ const styles = StyleSheet.create({
     textAlign: "left",
   },
   rating: {},
+  slide: {
+    height: "100%",
+  },
 });

@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import { LinearGradient } from "expo-linear-gradient";
-import Icon from "react-native-vector-icons/AntDesign";
+import Icon from "react-native-vector-icons/Feather";
 import Navbar from "./Navbar";
 import { useNavigation } from "expo-router";
 import { useList } from "./Provider/WhatchlistProvider";
@@ -122,6 +122,10 @@ const Homebanner = () => {
     }
   };
 
+  if (!data) {
+    return <View style={{ aspectRatio: 16 / 16 }}></View>;
+  }
+
   const renderItem = ({ item }) => {
     return (
       <View style={{ aspectRatio: 16 / 16 }}>
@@ -179,18 +183,16 @@ const Homebanner = () => {
             width: "100%",
           }}
         >
-          <TouchableOpacity style={styles.btn}>
-            <Icon name="playcircleo" size={20} color="white" />
-            <Text
-              style={styles.btnText}
-              onPress={() =>
-                navigation.navigate("Details", {
-                  id: data[currentIndex].animeId,
-                })
-              }
-            >
-              Watch Now
-            </Text>
+          <TouchableOpacity
+            style={styles.btn}
+            onPress={() =>
+              navigation.navigate("Details", {
+                id: data[currentIndex].animeId,
+              })
+            }
+          >
+            <Icon name="info" size={20} color="white" />
+            <Text style={styles.btnText}>Details</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => fetchMaindetails(data[currentIndex]?.animeId)}
@@ -238,7 +240,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     marginTop: 10,
-    width: "35%",
+    width: "30%",
     justifyContent: "center",
     alignItems: "center",
     display: "flex",

@@ -28,6 +28,7 @@ function Tabs() {
           marginBottom: 20,
           borderRadius: 25,
           position: "absolute",
+          boxShadow: "0px 5px 20px black",
         },
         headerShown: false,
         tabBarIconStyle: {
@@ -53,7 +54,6 @@ function Tabs() {
                 width: 50,
                 borderRadius: 50,
                 height: 35,
-                opacity: focused ? 0.8 : 1,
               }}
             >
               <Icon

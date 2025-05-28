@@ -665,6 +665,7 @@ const styles = StyleSheet.create({
   },
   slider: {
     width: "100%",
+    borderRadius: 5,
   },
   time: {
     color: "white",

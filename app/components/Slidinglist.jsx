@@ -5,10 +5,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
 } from "react-native";
-import React from "react";
-import Icon from "react-native-vector-icons/FontAwesome6";
 import { useNavigation } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 
@@ -45,7 +42,7 @@ const Slidinglist = ({ data, limit, start }) => {
             </Text>
 
             <ImageBackground
-              borderRadius={10}
+              borderRadius={5}
               source={{ uri: item.image }}
               style={styles.image}
             >
@@ -90,7 +87,7 @@ const styles = StyleSheet.create({
     aspectRatio: 9 / 12,
   },
   text: {
-    fontSize: 15,
+    fontSize: 13,
     color: "#fff",
     textAlign: "left",
   },
