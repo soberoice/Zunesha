@@ -1,5 +1,5 @@
 <h1 align="center">
-  <img src="./assets/FINALZUNISHALOGO.png" alt="uwumi" width="128" />
+  <img src="./assets/Zunisha.png" alt="uwumi" width="128" />
   <br />
   Zunesha
 </h1>
