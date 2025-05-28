@@ -73,6 +73,8 @@ const Watchscreen = () => {
             setPage={setPage}
             hasNextPage={hasNextPage}
           />
+
+          <View style={{ height: 90 }}></View>
         </ScrollView>
       )}
     </View>
@@ -84,7 +86,7 @@ export default Watchscreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#001",
+    backgroundColor: "#1f1f1f",
     color: "#fff",
   },
   text: {

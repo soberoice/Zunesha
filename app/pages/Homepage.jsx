@@ -14,6 +14,7 @@ import * as ScreenOrientation from "expo-screen-orientation";
 import Homebanner from "../components/Homebanner";
 import Slidinglist from "../components/Slidinglist";
 import { useNavigation } from "expo-router";
+import Icon from "react-native-vector-icons/MaterialIcons";
 
 const Homepage = () => {
   const [topAiring, setTopAiring] = useState();
@@ -89,16 +90,15 @@ const Homepage = () => {
                     })
                   }
                 >
-                  <Text
+                  <Icon
                     style={{
                       paddingRight: 10,
                       color: "#32a88b",
-                      fontSize: 15,
                       fontWeight: "700",
                     }}
-                  >
-                    See more
-                  </Text>
+                    name="arrow-forward-ios"
+                    size={20}
+                  />
                 </TouchableOpacity>
               </View>
               <Slidinglist start={0} data={topAiring} limit={10} />
@@ -134,16 +134,15 @@ const Homepage = () => {
                     })
                   }
                 >
-                  <Text
+                  <Icon
                     style={{
                       paddingRight: 10,
                       color: "#32a88b",
-                      fontSize: 15,
                       fontWeight: "700",
                     }}
-                  >
-                    See more
-                  </Text>
+                    name="arrow-forward-ios"
+                    size={20}
+                  />
                 </TouchableOpacity>
               </View>
               <Slidinglist data={newEpisodes} limit={10} />
@@ -179,22 +178,22 @@ const Homepage = () => {
                     })
                   }
                 >
-                  <Text
+                  <Icon
                     style={{
                       paddingRight: 10,
                       color: "#32a88b",
-                      fontSize: 15,
                       fontWeight: "700",
                     }}
-                  >
-                    See more
-                  </Text>
+                    name="arrow-forward-ios"
+                    size={20}
+                  />
                 </TouchableOpacity>
               </View>
               <Slidinglist data={popular} limit={10} />
             </View>
           </View>
         )}
+        <View style={{ height: 90 }}></View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -205,7 +204,7 @@ export default Homepage;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#001",
+    backgroundColor: "#1f1f1f",
     justifyContent: "center",
     alignItems: "center",
   },

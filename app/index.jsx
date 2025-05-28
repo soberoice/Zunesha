@@ -1,7 +1,7 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Icon from "react-native-vector-icons/FontAwesome";
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { WatchListProvider } from "./components/Provider/WhatchlistProvider";
 import WatchEpisode from "./pages/WatchEpisode";
@@ -20,27 +20,50 @@ function Tabs() {
     <Tab.Navigator
       initialRouteName="Home"
       screenOptions={({ route }) => ({
-        tabBarActiveTintColor: "#fff",
-        tabBarInactiveTintColor: "#32a88b",
         tabBarStyle: {
           backgroundColor: "#000",
           borderColor: "#000",
-          height: 70,
+          height: 60,
+          marginHorizontal: 20,
+          marginBottom: 20,
+          borderRadius: 25,
+          position: "absolute",
         },
         headerShown: false,
-        tabBarLabelStyle: {
-          fontSize: 12,
-          paddingBottom: 5,
-          fontWeight: "700",
+        tabBarIconStyle: {
+          margin: "auto",
         },
-        tabBarIcon: ({ color, size }) => {
+        tabBarLabelStyle: {
+          display: "none",
+        },
+        tabBarIcon: ({ focused, color, size }) => {
           let iconName;
+          let iconColor = focused ? "#fff" : "#32a88b";
+          let iconBackground = focused ? "#32a88b" : "transparent";
+
           if (route.name === "Home") iconName = "home";
           else if (route.name === "Search") iconName = "search";
           else if (route.name === "WatchList") iconName = "bookmark";
           else if (route.name === "watch") iconName = "tv";
 
-          return <Icon name={iconName} size={20} color={color} />;
+          return (
+            <View
+              style={{
+                backgroundColor: iconBackground,
+                width: 50,
+                borderRadius: 50,
+                height: 35,
+                opacity: focused ? 0.8 : 1,
+              }}
+            >
+              <Icon
+                style={{ margin: "auto" }}
+                name={iconName}
+                size={20}
+                color={iconColor}
+              />
+            </View>
+          );
         },
       })}
     >
@@ -55,28 +78,30 @@ function Tabs() {
 export default function App() {
   return (
     <WatchListProvider>
-      <Stack.Navigator>
-        <Stack.Screen
-          name="Tabs"
-          component={Tabs}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Details"
-          options={{ headerShown: false }}
-          component={AnimeDetails}
-        />
-        <Stack.Screen
-          name="watchepisode"
-          options={{ headerShown: false }}
-          component={WatchEpisode}
-        />
-        <Stack.Screen
-          name="more"
-          options={{ headerShown: false }}
-          component={More}
-        />
-      </Stack.Navigator>
+      <View style={styles.container}>
+        <Stack.Navigator>
+          <Stack.Screen
+            name="Tabs"
+            component={Tabs}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Details"
+            options={{ headerShown: false }}
+            component={AnimeDetails}
+          />
+          <Stack.Screen
+            name="watchepisode"
+            options={{ headerShown: false }}
+            component={WatchEpisode}
+          />
+          <Stack.Screen
+            name="more"
+            options={{ headerShown: false }}
+            component={More}
+          />
+        </Stack.Navigator>
+      </View>
     </WatchListProvider>
   );
 }
@@ -85,6 +110,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: "100%",
-    backgroundColor: "#001",
+    backgroundColor: "#1a1a1a",
   },
 });

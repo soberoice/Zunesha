@@ -128,6 +128,7 @@ const CharacterList = ({ characters }) => {
         </TouchableOpacity>
         {Array.from({ length: Length }).map((_, index) => (
           <View
+            key={index}
             style={{
               height: 10,
               width: 10,

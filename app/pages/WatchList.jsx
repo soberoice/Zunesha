@@ -78,6 +78,6 @@ export default WatchList;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#001",
+    backgroundColor: "#1f1f1f",
   },
 });

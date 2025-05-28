@@ -14,7 +14,7 @@ const Navbar = () => {
   return (
     <SafeAreaView style={styles.container}>
       <Icon name="play-circle" size={30} color={"white"} />
-      <TouchableOpacity onPress={()=>navigation.navigate('Search')}>
+      <TouchableOpacity onPress={() => navigation.navigate("Search")}>
         <Icon name="search" size={25} color={"white"} />
       </TouchableOpacity>
     </SafeAreaView>

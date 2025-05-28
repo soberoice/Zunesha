@@ -1,5 +1,6 @@
 import {
   Image,
+  ImageBackground,
   ScrollView,
   StyleSheet,
   Text,
@@ -9,6 +10,7 @@ import {
 import React from "react";
 import Icon from "react-native-vector-icons/FontAwesome6";
 import { useNavigation } from "expo-router";
+import { LinearGradient } from "expo-linear-gradient";
 
 const Slidinglist = ({ data, limit, start }) => {
   const navigation = useNavigation();
@@ -33,68 +35,27 @@ const Slidinglist = ({ data, limit, start }) => {
                 padding: 5,
                 borderRadius: 5,
                 position: "absolute",
-                color: item.nsfw ? "#fff" : "#000",
-                backgroundColor: item.nsfw ? "red" : "#fff",
-                left: 0,
+                color: "#fff",
+                right: 0,
                 zIndex: 1,
+                bottom: 0,
               }}
             >
               {item.nsfw ? "+18" : "PG-13"}
             </Text>
-            <Text
-              style={{
-                fontWeight: "700",
-                fontSize: 10,
-                padding: 5,
-                borderRadius: 5,
-                position: "absolute",
-                color: "#fff",
-                backgroundColor: "#32a88b",
-                right: 0,
-                zIndex: 1,
-              }}
+
+            <ImageBackground
+              borderRadius={10}
+              source={{ uri: item.image }}
+              style={styles.image}
             >
-              {item.type}
-            </Text>
-
-            {item.sub && (
-              <Text
-                style={{
-                  fontWeight: "700",
-                  fontSize: 10,
-                  padding: 5,
-                  borderRadius: 5,
-                  position: "absolute",
-                  color: "#fff",
-                  backgroundColor: "#32a88b",
-                  left: 0,
-                  zIndex: 1,
-                  bottom: 0,
-                }}
-              >
-                <Icon name="closed-captioning" /> {item.sub}
-              </Text>
-            )}
-
-            {item.dub > 0 && (
-              <Text
-                style={{
-                  fontWeight: "700",
-                  fontSize: 10,
-                  padding: 5,
-                  borderRadius: 5,
-                  position: "absolute",
-                  color: "#fff",
-                  backgroundColor: "#32a88b",
-                  right: 0,
-                  zIndex: 1,
-                  bottom: 0,
-                }}
-              >
-                <Icon name="microphone" /> {item.dub}
-              </Text>
-            )}
-            <Image style={styles.image} source={{ uri: item.image }} />
+              <LinearGradient
+                colors={["transparent", "#1a1a1a"]}
+                start={{ x: 0.5, y: 0.8 }}
+                end={{ x: 0.5, y: 1 }}
+                style={styles.slide}
+              ></LinearGradient>
+            </ImageBackground>
             <Text numberOfLines={1} style={styles.text}>
               {item.title}
             </Text>
@@ -113,6 +74,9 @@ const styles = StyleSheet.create({
     height: 250,
     flexWrap: "nowrap",
   },
+  slide: {
+    height: "100%",
+  },
   itemContainer: {
     height: 175,
     paddingBottom: 10,
@@ -123,7 +87,6 @@ const styles = StyleSheet.create({
     height: 175,
     resizeMode: "cover",
     marginBottom: 10,
-    borderRadius: 10,
     aspectRatio: 9 / 12,
   },
   text: {

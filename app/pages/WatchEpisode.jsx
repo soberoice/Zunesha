@@ -13,13 +13,14 @@ import {
 import Video from "react-native-video";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import * as ScreenOrientation from "expo-screen-orientation";
-import Slider from "@react-native-community/slider";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { useMemo } from "react";
 import VideoSettings from "../components/VideoSettings";
 import { useNavigation } from "expo-router";
 import * as SystemUI from "expo-system-ui";
 import EpisodeList from "../components/EpisodeList";
+import { useSharedValue } from "react-native-reanimated";
+import Slider from "@react-native-community/slider";
 
 function usePrevious(value) {
   const ref = useRef();
@@ -63,6 +64,7 @@ const WatchEpisode = ({ route }) => {
   const videoSource = data?.sources[0]?.url;
   const [isMute, setIsMute] = useState(false);
   const [skipIntro, setSkipIntro] = useState(false);
+  const progress = useSharedValue();
   const [playerDimensions, setPlayerDimensions] = useState({
     width: 0,
     height: 0,
@@ -521,26 +523,33 @@ const WatchEpisode = ({ route }) => {
                         {formatTime(currentTime)}
                       </Text>
                     </View>
-                    <Slider
-                      style={styles.slider}
-                      minimumValue={0}
-                      maximumValue={duration}
-                      value={currentTime}
-                      minimumTrackTintColor="#32a88b"
-                      maximumTrackTintColor="#888"
-                      thumbTintColor="#fff"
-                      onValueChange={(value) => {
-                        setIsSeeking(true);
-                        setSeekTime(value);
+                    <View
+                      style={{
+                        justifyContent: "center",
+                        width: "60%",
                       }}
-                      onSlidingStart={() => {
-                        setIsSeeking(true);
-                      }}
-                      onSlidingComplete={(value) => {
-                        handleSeek(value);
-                        setIsSeeking(false);
-                      }} // resume playback after seeking
-                    />
+                    >
+                      <Slider
+                        style={styles.slider}
+                        minimumValue={0}
+                        maximumValue={duration}
+                        value={currentTime}
+                        minimumTrackTintColor="#32a88b"
+                        maximumTrackTintColor="#888"
+                        thumbTintColor="transparent"
+                        onValueChange={(value) => {
+                          setIsSeeking(true);
+                          setSeekTime(value);
+                        }}
+                        onSlidingStart={() => {
+                          setIsSeeking(true);
+                        }}
+                        onSlidingComplete={(value) => {
+                          handleSeek(value);
+                          setIsSeeking(false);
+                        }}
+                      />
+                    </View>
                     <Text style={styles.time}>{formatTime(duration)}</Text>
                     {/* MUTE  */}
                     <TouchableOpacity onPress={() => handleVolumePress()}>
@@ -602,7 +611,7 @@ const WatchEpisode = ({ route }) => {
               style={[
                 styles.tabs,
                 {
-                  borderBottomColor: isDub ? "#32a88b" : "#fff",
+                  borderBottomColor: isDub ? "#32a88b" : "transparent",
                   opacity: isDub ? 1 : 0.5,
                 },
               ]}
@@ -641,7 +650,7 @@ const WatchEpisode = ({ route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#000",
+    backgroundColor: "#1f1f1f",
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
@@ -655,8 +664,7 @@ const styles = StyleSheet.create({
     color: "#fff",
   },
   slider: {
-    width: "60%",
-    height: 40,
+    width: "100%",
   },
   time: {
     color: "white",

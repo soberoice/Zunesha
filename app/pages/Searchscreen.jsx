@@ -78,6 +78,8 @@ const Searchscreen = () => {
                 page={page}
                 hasNextPage={searchResults?.hasNextPage}
               />
+
+              <View style={{ height: 90 }}></View>
             </ScrollView>
           )
         ) : (
@@ -89,6 +91,8 @@ const Searchscreen = () => {
             }}
           >
             <ActivityIndicator size={50} color={"#33a88b"} />
+
+            <View style={{ height: 80 }}></View>
           </View>
         )}
       </View>
@@ -101,7 +105,7 @@ export default Searchscreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#001",
+    backgroundColor: "#1f1f1f",
     paddingTop: 20,
   },
   searchBar: {
