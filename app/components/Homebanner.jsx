@@ -60,6 +60,7 @@ const Homebanner = () => {
     };
     fetchData();
   }, []);
+
   const fetchMaindetails = async (id) => {
     try {
       const apiUrl = process.env.EXPO_PUBLIC_API_URL;
@@ -126,21 +127,15 @@ const Homebanner = () => {
     return <View style={{ aspectRatio: 16 / 16 }}></View>;
   }
 
-  const renderItem = ({ item }) => {
-    return (
-      <View style={{ aspectRatio: 16 / 16 }}>
-        <ImageBackground
-          source={{ uri: item.imageAnime }}
-          style={{
-            width: width,
-            aspectRatio: 16 / 16,
-          }}
-          borderBottomLeftRadius={15}
-          borderBottomRightRadius={15}
-        ></ImageBackground>
-      </View>
-    );
-  };
+  const BannerItem = React.memo(({ item }) => (
+    <View style={{ aspectRatio: 16 / 16 }}>
+      <ImageBackground
+        source={{ uri: item.imageAnime }}
+        style={{ width: width, aspectRatio: 16 / 16 }}
+      />
+    </View>
+  ));
+  const renderItem = ({ item }) => <BannerItem item={item} />;
   return (
     <View>
       <LinearGradient
@@ -160,19 +155,25 @@ const Homebanner = () => {
         pagingEnabled={true}
         renderItem={renderItem}
         onMomentumScrollEnd={handleScrollEnd}
+        getItemLayout={(data, index) => ({
+          length: width,
+          offset: width * index,
+          index,
+        })}
+        initialNumToRender={5}
+        maxToRenderPerBatch={5}
+        windowSize={5}
+        removeClippedSubviews={true}
       />
 
       <LinearGradient
-        colors={["transparent", "rgba(0, 0, 0, 0.90)"]}
+        colors={["transparent", "#1f1f1f"]}
         start={{ x: 0.5, y: -0.03 }}
         end={{ x: 0.5, y: 1 }}
         style={styles.slide}
       >
         <Text numberOfLines={1} style={styles.text}>
           {data[currentIndex]?.name}
-        </Text>
-        <Text numberOfLines={5} style={{ fontSize: 12, color: "#fff" }}>
-          {data[currentIndex]?.anidesc}
         </Text>
         <View
           style={{
@@ -229,7 +230,6 @@ const styles = StyleSheet.create({
     alignItems: "left",
     height: "full",
     width: "100%",
-    borderRadius: 15,
   },
   text: {
     fontSize: 18,

@@ -15,8 +15,11 @@ import Homebanner from "../components/Homebanner";
 import Slidinglist from "../components/Slidinglist";
 import { useNavigation } from "expo-router";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import { useList } from "../components/Provider/WhatchlistProvider";
+import ContinueWatchingList from "../components/ContinueWatchingList";
 
 const Homepage = () => {
+  const { continueArray } = useList();
   const [topAiring, setTopAiring] = useState();
   const [newEpisodes, setNewEpisodes] = useState();
   const [popular, setPopular] = useState();
@@ -58,6 +61,21 @@ const Homepage = () => {
     <SafeAreaView style={styles.container}>
       <ScrollView>
         <Homebanner />
+        {continueArray.length && (
+          <View style={{ marginTop: 15 }}>
+            <Text
+              style={{
+                paddingLeft: 10,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "700",
+              }}
+            >
+              Continue Watching
+            </Text>
+            <ContinueWatchingList />
+          </View>
+        )}
         {topAiring && (
           <View style={{ marginTop: 15 }}>
             <View

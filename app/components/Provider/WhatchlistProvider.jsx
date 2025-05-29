@@ -7,6 +7,7 @@ export const useList = () => useContext(WatchListContext);
 
 export const WatchListProvider = ({ children }) => {
   const [watchListArray, setWatchListArray] = useState([]);
+  const [continueArray, setContinueArray] = useState([]);
 
   // Load watch list from storage when app starts
   useEffect(() => {
@@ -65,6 +66,61 @@ export const WatchListProvider = ({ children }) => {
     return exists;
   }
 
+  // Load continue watching list from storage when app starts
+  useEffect(() => {
+    const loadContinueWatching = async () => {
+      try {
+        const storedList = await AsyncStorage.getItem("@continue");
+        console.log("Stored continue List: ", storedList);
+        if (storedList !== null) {
+          setContinueArray(JSON.parse(storedList));
+        }
+      } catch (e) {
+        console.error("Failed to load watchlist", e);
+      }
+    };
+    loadContinueWatching();
+  }, []);
+
+  // Save continue watching list to storage whenever it changes
+  useEffect(() => {
+    const saveContinueWatching = async () => {
+      try {
+        const cleanedList = continueArray.filter((item) => item);
+
+        await AsyncStorage.setItem("@continue", JSON.stringify(cleanedList));
+      } catch (e) {
+        console.error("Failed to save continue watching", e);
+      }
+    };
+    saveContinueWatching();
+  }, [continueArray]);
+
+  const addToContinueList = (item) => {
+    setContinueArray((prev) => [...prev, item]);
+  };
+
+  const removeFromContinue = (item) => {
+    setContinueArray((prev) => prev.filter((i) => i?.epId !== item?.epId));
+  };
+
+  function addToContinue(item) {
+    console.log("anime :", item);
+    console.log(continueArray);
+    const exists = inContinue(item?.epId);
+    if (exists) {
+      removeFromContinue(item);
+      addToContinueList(item);
+    } else {
+      addToContinueList(item);
+    }
+  }
+
+  function inContinue(itemId) {
+    const exists = continueArray.some((i) => i?.epId === itemId);
+    return exists;
+  }
+
   return (
     <WatchListContext.Provider
       value={{
@@ -72,6 +128,10 @@ export const WatchListProvider = ({ children }) => {
         setWatchListArray,
         addToWatchList,
         inWatchList,
+        inContinue,
+        addToContinue,
+        continueArray,
+        removeFromContinue,
       }}
     >
       {children}

@@ -19,7 +19,7 @@ import {
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { LinearGradient } from "expo-linear-gradient";
 
-const AnimeDetailsEpList = ({ ep, image, hasDub, hasSub, cover }) => {
+const AnimeDetailsEpList = ({ name, ep, image, hasDub, hasSub, cover }) => {
   const navigation = useNavigation();
 
   const [searchInput, setSearchInput] = useState("");
@@ -47,6 +47,7 @@ const AnimeDetailsEpList = ({ ep, image, hasDub, hasSub, cover }) => {
               hasSub: hasSub,
               hasDub: hasDub,
               episodeHasDub: item?.isDubbed,
+              name: name,
               nextEpisode: ep.filter(
                 (episode) => episode.number.toString() === item.number + 1
               )[0]?.id,
@@ -136,6 +137,7 @@ const AnimeDetailsEpList = ({ ep, image, hasDub, hasSub, cover }) => {
                     hasSub: hasSub,
                     episodeHasDub: item.isDubbed,
                     nextEpisode: ep[index + 1]?.id,
+                    name: name,
                   })
                 }
               >

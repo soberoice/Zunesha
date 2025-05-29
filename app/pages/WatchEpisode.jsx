@@ -1,6 +1,7 @@
 import {
   ActivityIndicator,
   Animated,
+  AppState,
   Dimensions,
   StatusBar,
   StyleSheet,
@@ -21,6 +22,7 @@ import * as SystemUI from "expo-system-ui";
 import EpisodeList from "../components/EpisodeList";
 import { useSharedValue } from "react-native-reanimated";
 import Slider from "@react-native-community/slider";
+import { useList } from "../components/Provider/WhatchlistProvider";
 
 function usePrevious(value) {
   const ref = useRef();
@@ -30,6 +32,8 @@ function usePrevious(value) {
   return ref.current;
 }
 const WatchEpisode = ({ route }) => {
+  const { addToContinue } = useList();
+  const appState = useRef(AppState.currentState);
   const {
     id,
     ep,
@@ -40,6 +44,7 @@ const WatchEpisode = ({ route }) => {
     hasDub,
     episodeHasDub,
     nextEpisode,
+    name,
   } = route.params;
   const [isDub, setIsDub] = useState(false);
   const [episodeId, setEpisodeId] = useState(id);
@@ -107,6 +112,21 @@ const WatchEpisode = ({ route }) => {
     [videoSource, subtitleTracks]
   );
   const prevSubIndex = usePrevious(subtitleIndex);
+  const saveProgress = () => {
+    addToContinue({
+      epId: id,
+      episodes: ep,
+      currentTime: currentTime,
+      duration: duration,
+      title: title,
+      number: number,
+      hasSub: hasSub,
+      hasDub: hasDub,
+      episodeHasDub: episodeHasDub,
+      cover: cover,
+      name: name,
+    });
+  };
   const handlePlayPress = useCallback(() => {
     if (video.current) {
       if (playbackState.isPlaying) {
@@ -167,8 +187,41 @@ const WatchEpisode = ({ route }) => {
   const handlePlaybackStateChange = useCallback((state) => {
     setPlaybackState(state);
     console.log("Playback State:", state);
+    if (state === "paused" || state === "ended") {
+      saveProgress();
+    }
   }, []);
+  // When navigating away from screen
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("beforeRemove", () => {
+      saveProgress();
+    });
 
+    return unsubscribe;
+  }, [navigation, currentTime, duration]);
+  // When app is backgrounded
+  useEffect(() => {
+    const subscription = AppState.addEventListener("change", (nextAppState) => {
+      if (
+        appState.current.match(/active/) &&
+        nextAppState.match(/inactive|background/)
+      ) {
+        saveProgress();
+      }
+
+      appState.current = nextAppState;
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, [currentTime, duration]);
+  // On unmount
+  useEffect(() => {
+    return () => {
+      saveProgress();
+    };
+  }, [currentTime, duration]);
   const handleSeek = (time) => {
     video.current.seek(time);
     setCurrentTime(time);
@@ -207,7 +260,6 @@ const WatchEpisode = ({ route }) => {
       console.error("Fetch error:", error);
     } finally {
       setLoading(false);
-      console.log(data);
     }
   };
 
@@ -241,7 +293,7 @@ const WatchEpisode = ({ route }) => {
   useEffect(() => {
     if (data?.subtitles && data?.subtitles?.length > 0) {
       setSubtitleTracks(data?.subtitles);
-      console.log("Subtitle Tracks: ", data?.subtitles);
+      // console.log("Subtitle Tracks: ", data?.subtitles);
     }
     showOverlay();
   }, [data?.subtitles]);
@@ -287,6 +339,7 @@ const WatchEpisode = ({ route }) => {
     }
   };
   const handleBackPress = () => {
+    saveProgress();
     if (isFullScreen) {
       setIsFullScreen(false);
       // Exit Fullscreen mode
@@ -326,7 +379,7 @@ const WatchEpisode = ({ route }) => {
             width: "100%",
           }}
         >
-          {console.log("video Sourse", videoSource)}
+          {/* {console.log("video Sourse", videoSource)} */}
           <ActivityIndicator color="#32a88b" size={50} />
         </View>
       )}
@@ -385,7 +438,10 @@ const WatchEpisode = ({ route }) => {
                     ).length || 0;
                   setNullSubtitleIndex(nullTrackCount);
                   console.log(`duration: ${duration}`);
-                  console.log("cover: ", cover);
+                  // console.log("cover: ", cover);
+                }}
+                onEnd={() => {
+                  saveProgress();
                 }}
                 style={videoStyle}
                 onTextTracks={(event) => {
@@ -398,7 +454,7 @@ const WatchEpisode = ({ route }) => {
                     setEnglishIndex(englishTrack?.index);
                   }
                   console.log(`english: ${englishTrack?.index}`);
-                  console.log(`subtitle index: ${subtitleIndex}`);
+                  // console.log(`subtitle index: ${subtitleIndex}`);
                 }}
                 selectedTextTrack={{
                   type: "index",
@@ -629,6 +685,7 @@ const WatchEpisode = ({ route }) => {
           isDub={isDub}
           hasSub={hasSub}
           hasDub={hasDub}
+          name={name}
         />
       </View>
       {isVideoReady && (

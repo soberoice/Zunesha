@@ -53,17 +53,26 @@ const AnimeDetails = ({ route }) => {
     return () => clearInterval(timer);
   }, [remainingSeconds]);
   function getTime(seconds) {
-    const days = Math.floor(seconds / (3600 * 24));
-    const hrs = Math.floor((seconds % (3600 * 24)) / 3600);
-    const mins = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-
-    const time = {
-      d: String(days).padStart(2, "0"),
-      h: String(hrs).padStart(2, "0"),
-      m: String(mins).padStart(2, "0"),
-      s: String(secs).padStart(2, "0"),
-    };
+    let time;
+    if (!seconds) {
+      time = {
+        d: "00",
+        h: "00",
+        m: "00",
+        s: "00",
+      };
+    } else {
+      const days = Math.floor(seconds / (3600 * 24));
+      const hrs = Math.floor((seconds % (3600 * 24)) / 3600);
+      const mins = Math.floor((seconds % 3600) / 60);
+      const secs = seconds % 60;
+      time = {
+        d: String(days).padStart(2, "0"),
+        h: String(hrs).padStart(2, "0"),
+        m: String(mins).padStart(2, "0"),
+        s: String(secs).padStart(2, "0"),
+      };
+    }
     return time;
   }
 
@@ -270,115 +279,91 @@ const AnimeDetails = ({ route }) => {
             marginTop: 10,
           }}
         >
-          {anilist?.nextAiringEpisode ? (
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-evenly",
+              width: "90%",
+              backgroundColor: "#000",
+              marginHorizontal: "auto",
+              borderRadius: 50,
+              height: 60,
+            }}
+          >
             <View
               style={{
-                display: "flex",
-                flexDirection: "row",
+                color: "#32a88b",
+                justifyContent: "center",
                 alignItems: "center",
-                justifyContent: "space-evenly",
-                width: "90%",
-                backgroundColor: "#000",
-                marginHorizontal: "auto",
-                borderRadius: 50,
-                height: 60,
+                width: 30,
               }}
             >
-              <View
-                style={{
-                  color: "#32a88b",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  width: 30,
-                }}
+              <Text
+                style={{ color: "#32a88b", fontSize: 15, fontWeight: "700" }}
               >
-                <Text
-                  style={{ color: "#32a88b", fontSize: 15, fontWeight: "700" }}
-                >
-                  {getTime(remainingSeconds).d}
-                </Text>
-                <Text
-                  style={{ color: "#32a88b", lineHeight: 15, fontSize: 10 }}
-                >
-                  days
-                </Text>
-              </View>
-              <Text style={{ color: "#32a88b" }}>:</Text>
-              <View
-                style={{
-                  color: "#32a88b",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  width: 30,
-                }}
-              >
-                <Text
-                  style={{ color: "#32a88b", fontSize: 15, fontWeight: "700" }}
-                >
-                  {getTime(remainingSeconds).h}
-                </Text>
-                <Text
-                  style={{ color: "#32a88b", lineHeight: 15, fontSize: 10 }}
-                >
-                  hrs
-                </Text>
-              </View>
-              <Text style={{ color: "#32a88b" }}>:</Text>
-              <View
-                style={{
-                  color: "#32a88b",
-                  width: 30,
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Text
-                  style={{ color: "#32a88b", fontSize: 15, fontWeight: "700" }}
-                >
-                  {getTime(remainingSeconds).m}
-                </Text>
-                <Text
-                  style={{ color: "#32a88b", lineHeight: 15, fontSize: 10 }}
-                >
-                  min
-                </Text>
-              </View>
-              <Text style={{ color: "#32a88b" }}>:</Text>
-              <View
-                style={{
-                  color: "#32a88b",
-                  width: 30,
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Text
-                  style={{ color: "#32a88b", fontSize: 15, fontWeight: "700" }}
-                >
-                  {getTime(remainingSeconds).s}
-                </Text>
-                <Text
-                  style={{ color: "#32a88b", lineHeight: 15, fontSize: 10 }}
-                >
-                  sec
-                </Text>
-              </View>
+                {getTime(remainingSeconds).d}
+              </Text>
+              <Text style={{ color: "#32a88b", lineHeight: 15, fontSize: 10 }}>
+                days
+              </Text>
             </View>
-          ) : (
-            // <Text
-            //   style={{ color: "#32a88b", fontWeight: "bold", paddingLeft: 10 }}
-            // >
-            //   Next Episode In:
-            //   {`${getTime(remainingSeconds).h} :${
-            //     getTime(remainingSeconds).m
-            //   }:${getTime(remainingSeconds).s}`}
-            // </Text>
-            <Text
-              style={{ color: "#32a88b", fontWeight: "bold", paddingLeft: 10 }}
+            <Text style={{ color: "#32a88b" }}>:</Text>
+            <View
+              style={{
+                color: "#32a88b",
+                justifyContent: "center",
+                alignItems: "center",
+                width: 30,
+              }}
             >
-              No Estimated Release Date
-            </Text>
-          )}
+              <Text
+                style={{ color: "#32a88b", fontSize: 15, fontWeight: "700" }}
+              >
+                {getTime(remainingSeconds).h}
+              </Text>
+              <Text style={{ color: "#32a88b", lineHeight: 15, fontSize: 10 }}>
+                hrs
+              </Text>
+            </View>
+            <Text style={{ color: "#32a88b" }}>:</Text>
+            <View
+              style={{
+                color: "#32a88b",
+                width: 30,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Text
+                style={{ color: "#32a88b", fontSize: 15, fontWeight: "700" }}
+              >
+                {getTime(remainingSeconds).m}
+              </Text>
+              <Text style={{ color: "#32a88b", lineHeight: 15, fontSize: 10 }}>
+                min
+              </Text>
+            </View>
+            <Text style={{ color: "#32a88b" }}>:</Text>
+            <View
+              style={{
+                color: "#32a88b",
+                width: 30,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Text
+                style={{ color: "#32a88b", fontSize: 15, fontWeight: "700" }}
+              >
+                {getTime(remainingSeconds).s}
+              </Text>
+              <Text style={{ color: "#32a88b", lineHeight: 15, fontSize: 10 }}>
+                sec
+              </Text>
+            </View>
+          </View>
         </View>
         <Text numberOfLines={desToggle ? null : 5} style={styles.des}>
           {data?.description}
@@ -461,6 +446,7 @@ const AnimeDetails = ({ route }) => {
               hasDub={data.hasDub}
               hasSub={data.hasSub}
               cover={anilist?.cover || data?.image}
+              name={data?.title}
             />
           )}
           {tab === "Related" && (

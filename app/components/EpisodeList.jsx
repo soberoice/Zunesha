@@ -30,7 +30,7 @@ const splitIntoChunks = (array, isDub) => {
   return result;
 };
 
-const EpisodeList = ({ ep, image, currentEp, isDub, hasSub, hasDub }) => {
+const EpisodeList = ({ name, ep, image, currentEp, isDub, hasSub, hasDub }) => {
   const navigation = useNavigation();
   const [chunks, setChunks] = useState(splitIntoChunks(ep));
   const [epList, setEpList] = useState(1);
@@ -75,6 +75,7 @@ const EpisodeList = ({ ep, image, currentEp, isDub, hasSub, hasDub }) => {
             hasSub: hasSub,
             episodeHasDub: filteredEp[0]?.isDubbed,
             nextEpisode: nextEp[0]?.id,
+            name: name,
           })
         }
       >
@@ -203,6 +204,7 @@ const EpisodeList = ({ ep, image, currentEp, isDub, hasSub, hasDub }) => {
                       hasSub: hasSub,
                       episodeHasDub: item?.isDubbed,
                       nextEpisode: nextEpisode,
+                      name: name,
                     });
                   }}
                 >
