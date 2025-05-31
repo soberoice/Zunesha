@@ -28,17 +28,16 @@ const Homebanner = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  let originalSlides = [];
-
   useEffect(() => {
     setCurrentIndex(0);
     const fetchData = async () => {
       try {
         setLoading(true);
-        const apiUrl = process.env.EXPO_PUBLIC_BANNER_URL;
-        const response = await fetch(`${apiUrl}`);
+        const apiUrl = process.env.EXPO_PUBLIC_API_URL;
+        const response = await fetch(`${apiUrl}/anime/zoro/most-popular`);
         const json = await response.json();
-        originalSlides = json.slides;
+        console.log(json);
+        const originalSlides = json.results.slice(0, 5);
         const tripledSlides = [
           ...originalSlides,
           ...originalSlides,
@@ -130,7 +129,7 @@ const Homebanner = () => {
   const BannerItem = React.memo(({ item }) => (
     <View style={{ aspectRatio: 16 / 16 }}>
       <ImageBackground
-        source={{ uri: item.imageAnime }}
+        source={{ uri: item.image }}
         style={{ width: width, aspectRatio: 16 / 16 }}
       />
     </View>
@@ -173,7 +172,7 @@ const Homebanner = () => {
         style={styles.slide}
       >
         <Text numberOfLines={1} style={styles.text}>
-          {data[currentIndex]?.name}
+          {data[currentIndex]?.title}
         </Text>
         <View
           style={{
@@ -188,7 +187,7 @@ const Homebanner = () => {
             style={styles.btn}
             onPress={() =>
               navigation.navigate("Details", {
-                id: data[currentIndex].animeId,
+                id: data[currentIndex].id,
               })
             }
           >
@@ -196,13 +195,11 @@ const Homebanner = () => {
             <Text style={styles.btnText}>Details</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => fetchMaindetails(data[currentIndex]?.animeId)}
+            onPress={() => addToWatchList(data[currentIndex])}
             style={styles.btn2}
           >
             <Icon
-              name={
-                !inWatchList(data[currentIndex]?.animeId) ? "plus" : "minus"
-              }
+              name={!inWatchList(data[currentIndex]?.id) ? "plus" : "minus"}
               size={20}
               color={"#fff"}
             />

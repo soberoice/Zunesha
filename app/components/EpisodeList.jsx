@@ -130,6 +130,7 @@ const EpisodeList = ({ name, ep, image, currentEp, isDub, hasSub, hasDub }) => {
               backgroundColor: "#1f1f1f",
               borderColor: "transparent",
               width: "100%",
+              zIndex: 0,
             }}
             textStyle={{
               color: "#32a88b",

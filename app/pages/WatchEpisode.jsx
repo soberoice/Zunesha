@@ -45,6 +45,8 @@ const WatchEpisode = ({ route }) => {
     episodeHasDub,
     nextEpisode,
     name,
+    continueTime,
+    isContinue,
   } = route.params;
   const [isDub, setIsDub] = useState(false);
   const [episodeId, setEpisodeId] = useState(id);
@@ -250,7 +252,7 @@ const WatchEpisode = ({ route }) => {
       setLoading(true);
       const apiUrl = process.env.EXPO_PUBLIC_API_URL;
       const response = await fetch(
-        `${apiUrl}/anime/zoro/watch/${episodeId}?dub=${isDub}`
+        `${apiUrl}/anime/zoro/watch/${id}?dub=${isDub}`
       );
       const res = await response.json();
       setData(res);
@@ -366,6 +368,12 @@ const WatchEpisode = ({ route }) => {
     }
   };
 
+  // useEffect(()=>{
+  //   const continuePlay = () => {
+  //     if()
+  //   }
+  // })
+
   return (
     <View style={styles.container}>
       {!isVideoReady && (
@@ -431,6 +439,7 @@ const WatchEpisode = ({ route }) => {
                 onBuffer={({ isBuffering }) => setIsVideoReady(!isBuffering)}
                 onLoad={({ duration, textTracks }) => {
                   setDuration(duration);
+                  video.current.seek(continueTime || 0);
                   setIsVideoReady(true);
                   const nullTrackCount =
                     textTracks?.filter(
@@ -519,16 +528,14 @@ const WatchEpisode = ({ route }) => {
                     </TouchableOpacity>
                     <View style={{ flexDirection: "row", gap: 10 }}>
                       {/* SETTINGS */}
-                      {!isFullScreen && (
-                        <TouchableOpacity
-                          style={styles.button}
-                          onPress={() => setToggleSettings(!toggleSettings)}
-                        >
-                          <Text style={styles.buttonText}>
-                            <Icon name={"settings"} size={25} color="#fff" />
-                          </Text>
-                        </TouchableOpacity>
-                      )}
+                      <TouchableOpacity
+                        style={styles.button}
+                        onPress={() => setToggleSettings(!toggleSettings)}
+                      >
+                        <Text style={styles.buttonText}>
+                          <Icon name={"settings"} size={25} color="#fff" />
+                        </Text>
+                      </TouchableOpacity>
                     </View>
                   </View>
                   <View style={{ flexDirection: "row", gap: 20 }}>
@@ -565,65 +572,75 @@ const WatchEpisode = ({ route }) => {
                   </View>
                   <View
                     style={{
-                      flexDirection: "row",
+                      flexDirection: "column",
                       justifyContent: "space-evenly",
                       alignItems: "center",
                       height: 40,
                       bottom: 0,
                       width: "100%",
                       position: "absolute",
+                      marginBottom: 10,
                     }}
                   >
-                    <View>
-                      <Text style={styles.time} key={currentTime}>
-                        {formatTime(currentTime)}
-                      </Text>
-                    </View>
+                    <Slider
+                      style={styles.slider}
+                      minimumValue={0}
+                      maximumValue={duration}
+                      value={currentTime}
+                      minimumTrackTintColor="#32a88b"
+                      maximumTrackTintColor="#888"
+                      thumbTintColor="transparent"
+                      onValueChange={(value) => {
+                        setIsSeeking(true);
+                        setSeekTime(value);
+                      }}
+                      onSlidingStart={() => {
+                        setIsSeeking(true);
+                      }}
+                      onSlidingComplete={(value) => {
+                        handleSeek(value);
+                        setIsSeeking(false);
+                      }}
+                    />
                     <View
                       style={{
-                        justifyContent: "center",
-                        width: "60%",
+                        justifyContent: "space-between",
+                        width: "90%",
+                        flexDirection: "row",
+                        alignItems: "center",
                       }}
                     >
-                      <Slider
-                        style={styles.slider}
-                        minimumValue={0}
-                        maximumValue={duration}
-                        value={currentTime}
-                        minimumTrackTintColor="#32a88b"
-                        maximumTrackTintColor="#888"
-                        thumbTintColor="transparent"
-                        onValueChange={(value) => {
-                          setIsSeeking(true);
-                          setSeekTime(value);
-                        }}
-                        onSlidingStart={() => {
-                          setIsSeeking(true);
-                        }}
-                        onSlidingComplete={(value) => {
-                          handleSeek(value);
-                          setIsSeeking(false);
-                        }}
-                      />
+                      <View>
+                        <Text style={styles.time} key={currentTime}>
+                          {formatTime(currentTime)} / {formatTime(duration)}
+                        </Text>
+                      </View>
+                      <View
+                        style={{ flexDirection: "row", alignItems: "center" }}
+                      >
+                        {/* MUTE  */}
+                        <TouchableOpacity onPress={() => handleVolumePress()}>
+                          <Icon
+                            name={!isMute ? "volume-up" : "volume-off"}
+                            color={"#fff"}
+                            size={25}
+                          />
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          onPress={() => handleFullscreenToggle()}
+                        >
+                          <Text>
+                            <Icon
+                              name={
+                                isFullScreen ? "fullscreen-exit" : "fullscreen"
+                              }
+                              size={30}
+                              color={"#fff"}
+                            />
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
                     </View>
-                    <Text style={styles.time}>{formatTime(duration)}</Text>
-                    {/* MUTE  */}
-                    <TouchableOpacity onPress={() => handleVolumePress()}>
-                      <Icon
-                        name={!isMute ? "volume-up" : "volume-off"}
-                        color={"#fff"}
-                        size={25}
-                      />
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => handleFullscreenToggle()}>
-                      <Text>
-                        <Icon
-                          name={isFullScreen ? "fullscreen-exit" : "fullscreen"}
-                          size={30}
-                          color={"#fff"}
-                        />
-                      </Text>
-                    </TouchableOpacity>
                   </View>
                 </View>
               </Animated.View>
@@ -690,6 +707,7 @@ const WatchEpisode = ({ route }) => {
       </View>
       {isVideoReady && (
         <VideoSettings
+          isFullScreen={isFullScreen}
           skipIntro={skipIntro}
           setSkipIntro={setSkipIntro}
           toggleSettings={toggleSettings}

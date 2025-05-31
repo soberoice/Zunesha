@@ -21,6 +21,7 @@ const VideoSettings = ({
   skipIntro,
   setSkipIntro,
   skipIntroFunc,
+  isFullScreen,
 }) => {
   const slideAnim = useRef(new Animated.Value(0)).current;
 
@@ -34,7 +35,7 @@ const VideoSettings = ({
 
   const animatedHeight = slideAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: [0, 300],
+    outputRange: [0, isFullScreen ? 300 : 400],
   });
   const isEnabled = skipIntro;
 
@@ -53,7 +54,16 @@ const VideoSettings = ({
           style={styles.fullscreenTouchable}
         />
       )}
-      <Animated.View style={[styles.container, { height: animatedHeight }]}>
+      <Animated.View
+        style={[
+          styles.container,
+          {
+            height: animatedHeight,
+            width: isFullScreen ? 450 : "100%",
+            marginHorizontal: isFullScreen ? "auto" : 0,
+          },
+        ]}
+      >
         <Text style={styles.title}>VideoSettings</Text>
         <ScrollView
           scrollEnabled={true}
@@ -105,12 +115,7 @@ const VideoSettings = ({
                     paddingHorizontal: 10,
                   }}
                 >
-                  {track.lang.slice(0, 2)}{" "}
-                  {track.lang.toLowerCase().includes("dubtitle") && "Dub"}
-                  {track.lang.toLowerCase().includes("simplified") &&
-                    "Simplified"}
-                  {track.lang.toLowerCase().includes("traditional") &&
-                    "Traditional"}
+                  {track.lang}
                 </Text>
               </TouchableOpacity>
             ))}
@@ -130,6 +135,8 @@ const styles = StyleSheet.create({
     height: "100%",
     backgroundColor: "rgba(0, 0, 0, 0.3)",
     zIndex: 10,
+    justifyContent: "center",
+    alignItems: "center",
   },
   fullscreenTouchable: {
     position: "absolute",
@@ -139,7 +146,6 @@ const styles = StyleSheet.create({
   container: {
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    width: "100%",
     backgroundColor: "#1f1f1f",
     position: "absolute",
     bottom: 0,
@@ -167,8 +173,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   subtitleWrapper: {
-    flexDirection: "row",
-    flexWrap: "wrap",
     gap: 5,
   },
   subBtn: {

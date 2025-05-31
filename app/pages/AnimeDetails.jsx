@@ -116,7 +116,7 @@ const AnimeDetails = ({ route }) => {
           setAnilist();
           const apiUrl = process.env.EXPO_PUBLIC_API_URL;
           const meta = await fetch(
-            `${apiUrl}/meta/anilist/info/${data?.alID}?provider=gogoanime`
+            `${apiUrl}/meta/anilist/info/${data?.alID}?provider=zoro`
           );
           console.log("anilist id: ", data.alID);
           const metaRes = await meta.json();

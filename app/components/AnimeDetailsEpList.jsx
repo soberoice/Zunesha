@@ -35,7 +35,7 @@ const AnimeDetailsEpList = ({ name, ep, image, hasDub, hasSub, cover }) => {
     return filteredEp.length ? (
       filteredEp.map((item) => (
         <TouchableOpacity
-          style={styles.btn}
+          style={[styles.btn, { height: 100 }]}
           key={item?.id} // Use filteredEp[0]?.id for the key
           onPress={() =>
             navigation.navigate("watchepisode", {
@@ -54,10 +54,37 @@ const AnimeDetailsEpList = ({ name, ep, image, hasDub, hasSub, cover }) => {
             })
           }
         >
-          <Image style={styles.image} source={{ uri: image }} />
+          <View
+            style={{
+              position: "absolute",
+              top: 0,
+              right: 0,
+              zIndex: 10,
+              flexDirection: "row",
+              paddingTop: 5,
+            }}
+          >
+            {item.isSubbed && (
+              <Icon name="closed-caption" size={20} color={"#32a88b"} />
+            )}
+            {item.isDubbed && <Icon name="mic" size={20} color={"#32a88b"} />}
+          </View>
+
+          <ImageBackground
+            borderRadius={5}
+            source={{ uri: cover }}
+            style={styles.image}
+          >
+            <LinearGradient
+              colors={["transparent", "#1a1a1a"]}
+              start={{ x: 0.5, y: 0.4 }}
+              end={{ x: 0.5, y: 1 }}
+              style={styles.slide}
+            ></LinearGradient>
+          </ImageBackground>
           <Icon
             name="play-arrow"
-            size={35}
+            size={30}
             color={"#32a88b"}
             style={styles.playbtn}
           />
@@ -141,6 +168,23 @@ const AnimeDetailsEpList = ({ name, ep, image, hasDub, hasSub, cover }) => {
                   })
                 }
               >
+                <View
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    right: 0,
+                    zIndex: 10,
+                    flexDirection: "row",
+                    paddingTop: 5,
+                  }}
+                >
+                  {item.isSubbed && (
+                    <Icon name="closed-caption" size={20} color={"#32a88b"} />
+                  )}
+                  {item.isDubbed && (
+                    <Icon name="mic" size={20} color={"#32a88b"} />
+                  )}
+                </View>
                 <ImageBackground
                   borderRadius={5}
                   source={{ uri: cover }}

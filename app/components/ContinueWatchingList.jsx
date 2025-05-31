@@ -41,6 +41,9 @@ export default function ContinueWatchingList() {
                 hasSub: item.hasSub,
                 episodeHasDub: item.isDubbed,
                 // nextEpisode: ep[index + 1]?.id,
+                continueTime: item.currentTime,
+                name: item.name,
+                isContinue: true,
               })
             }
           >
@@ -135,7 +138,6 @@ export default function ContinueWatchingList() {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row-reverse",
     padding: 10,
     alignItems: "center",
     height: 250,
@@ -154,7 +156,7 @@ const styles = StyleSheet.create({
   },
 
   btn: {
-    marginHorizontal: 15,
+    marginHorizontal: 10,
     width: 225,
     alignItems: "left",
     marginTop: 10,

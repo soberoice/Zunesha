@@ -32,7 +32,7 @@ const Homepage = () => {
         const apiUrl = process.env.EXPO_PUBLIC_API_URL;
         const topResponse = await fetch(`${apiUrl}/anime/zoro/top-airing`);
         const newResponse = await fetch(`${apiUrl}/anime/zoro/recent-episodes`);
-        const popularRes = await fetch(`${apiUrl}/anime/zoro/most-popular`);
+        const popularRes = await fetch(`${apiUrl}/anime/zoro/most-favorite`);
         const newData = await newResponse.json();
         const topData = await topResponse.json();
         const popularData = await popularRes.json();
