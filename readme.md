@@ -7,3 +7,12 @@
 <p align="center">
   Anime streaming app built with React Native and Expo
 </p>
+## 📸 Screenshots
+
+|                               Home & Discovery                                |                                Anime Details                                |                                   Video Player                                    |
+| :---------------------------------------------------------------------------: | :-------------------------------------------------------------------------: | :-------------------------------------------------------------------------------: |
+| <img src="./assets/screenshots/homepage.jpg" alt="Anime Screen" width="250"/> | <img src="./assets/screenshots/infopage.jpg" alt="Anime Info" width="250"/> | <img src="./assets/screenshots/watchepisode.jpg" alt="Video Player" width="250"/> |
+
+|                                  Random                                  |                                       Search                                       |
+| :----------------------------------------------------------------------: | :--------------------------------------------------------------------------------: |
+| <img src="./assets/screenshots/random.jpg" alt="Favorites" width="250"/> | <img src="./assets/screenshots/search.jpg" alt="Theme Customization" width="250"/> |

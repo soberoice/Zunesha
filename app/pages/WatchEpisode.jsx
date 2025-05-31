@@ -14,7 +14,7 @@ import {
 import Video from "react-native-video";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import * as ScreenOrientation from "expo-screen-orientation";
-import Icon from "react-native-vector-icons/MaterialIcons";
+import Icon from "react-native-vector-icons/SimpleLineIcons";
 import { useMemo } from "react";
 import VideoSettings from "../components/VideoSettings";
 import { useNavigation } from "expo-router";
@@ -509,11 +509,7 @@ const WatchEpisode = ({ route }) => {
                       }}
                       onPress={() => handleBackPress()}
                     >
-                      <Icon
-                        name="keyboard-backspace"
-                        color={"#fff"}
-                        size={30}
-                      />
+                      <Icon name="arrow-left" color={"#fff"} size={15} />
                       <Text
                         numberOfLines={1}
                         style={{
@@ -533,18 +529,18 @@ const WatchEpisode = ({ route }) => {
                         onPress={() => setToggleSettings(!toggleSettings)}
                       >
                         <Text style={styles.buttonText}>
-                          <Icon name={"settings"} size={25} color="#fff" />
+                          <Icon name={"settings"} size={20} color="#fff" />
                         </Text>
                       </TouchableOpacity>
                     </View>
                   </View>
-                  <View style={{ flexDirection: "row", gap: 20 }}>
+                  <View style={{ flexDirection: "row", gap: 30 }}>
                     <TouchableOpacity
                       style={styles.button}
                       onPress={() => handleRewind(false)}
                     >
                       <Text style={styles.buttonText}>
-                        <Icon name={"replay-10"} size={45} color="#fff" />
+                        <Icon name={"control-start"} size={30} color="#fff" />
                       </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
@@ -554,9 +550,11 @@ const WatchEpisode = ({ route }) => {
                       <Text style={styles.buttonText}>
                         <Icon
                           name={
-                            playbackState.isPlaying ? "pause" : "play-arrow"
+                            playbackState.isPlaying
+                              ? "control-pause"
+                              : "control-play"
                           }
-                          size={45}
+                          size={30}
                           color="#fff"
                         />
                       </Text>
@@ -566,7 +564,7 @@ const WatchEpisode = ({ route }) => {
                       onPress={() => handleRewind(true)}
                     >
                       <Text style={styles.buttonText}>
-                        <Icon name={"forward-10"} size={45} color="#fff" />
+                        <Icon name={"control-end"} size={30} color="#fff" />
                       </Text>
                     </TouchableOpacity>
                   </View>
@@ -589,7 +587,7 @@ const WatchEpisode = ({ route }) => {
                       value={currentTime}
                       minimumTrackTintColor="#32a88b"
                       maximumTrackTintColor="#888"
-                      thumbTintColor="transparent"
+                      thumbTintColor="#fff"
                       onValueChange={(value) => {
                         setIsSeeking(true);
                         setSeekTime(value);
@@ -616,14 +614,18 @@ const WatchEpisode = ({ route }) => {
                         </Text>
                       </View>
                       <View
-                        style={{ flexDirection: "row", alignItems: "center" }}
+                        style={{
+                          flexDirection: "row",
+                          alignItems: "center",
+                          gap: 15,
+                        }}
                       >
                         {/* MUTE  */}
                         <TouchableOpacity onPress={() => handleVolumePress()}>
                           <Icon
-                            name={!isMute ? "volume-up" : "volume-off"}
+                            name={!isMute ? "volume-2" : "volume-off"}
                             color={"#fff"}
-                            size={25}
+                            size={20}
                           />
                         </TouchableOpacity>
                         <TouchableOpacity
@@ -632,9 +634,9 @@ const WatchEpisode = ({ route }) => {
                           <Text>
                             <Icon
                               name={
-                                isFullScreen ? "fullscreen-exit" : "fullscreen"
+                                isFullScreen ? "size-actual" : "size-fullscreen"
                               }
-                              size={30}
+                              size={15}
                               color={"#fff"}
                             />
                           </Text>
