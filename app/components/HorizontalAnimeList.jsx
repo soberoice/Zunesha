@@ -18,63 +18,39 @@ const HorizontalAnimeList = ({ data }) => {
           >
             <Image style={styles.image} source={{ uri: item?.image }} />
             <View style={styles.desContainer}>
-              <Text numberOfLines={2} style={styles.text}>
-                {item?.title}
-              </Text>
-              <View style={{ flexDirection: "row", gap: 5 }}>
-                <View style={styles.desIcon}>
-                  <Text style={styles.descText}>{item?.type}</Text>
+              <View style={{ width: "70%", gap: 5 }}>
+                <Text numberOfLines={2} style={styles.text}>
+                  {item?.title.english || item?.title.romaji}
+                </Text>
+                <View style={{ flexDirection: "row", gap: 5 }}>
+                  <Text style={styles.descText}>
+                    {item?.nsfw ? "+18" : "PG-13"}
+                  </Text>
+                  <Text style={[{ fontSize: 20 }, styles.descText]}>
+                    &middot;
+                  </Text>
+                  <Text style={styles.descText}>
+                    {item?.totalEpisodes || item?.currentEpisodeCount} Episodes
+                  </Text>
+                  <Text style={[{ fontSize: 20 }, styles.descText]}>
+                    &middot;
+                  </Text>
+                  <Text style={styles.descText}>
+                    {(item?.rating / 10).toFixed(1)}
+                    <Icon name="star-rate" />
+                  </Text>
                 </View>
-                {item?.duration && (
-                  <View style={styles.desIcon}>
-                    <Text style={styles.descText}>{item?.duration}</Text>
-                  </View>
-                )}
-                {item && (
-                  <View style={styles.desIcon}>
-                    <Icon name="closed-caption" size={18} color={"#fff"} />
-                    <Text style={styles.descText}>
-                      {item?.sub || item?.totalEpisodes}
-                    </Text>
-                  </View>
-                )}
-                {item?.dub > 0 && (
-                  <View style={styles.desIcon}>
-                    <Icon name="mic" size={18} color={"#fff"} />
-                    <Text style={styles.descText}>{item?.dub}</Text>
-                  </View>
-                )}
               </View>
               {item && (
                 <TouchableOpacity
-                  style={{ width: 55 }}
                   onPress={() => addToWatchList(item)}
+                  style={styles.btn2}
                 >
-                  {inWatchList(item?.id) ? (
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-                      }}
-                    >
-                      <Icon
-                        name={"bookmark-remove"}
-                        size={25}
-                        color={"#32a88b"}
-                      />
-                      <Text style={{ color: "#32a88b" }}>Remove</Text>
-                    </View>
-                  ) : (
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-                      }}
-                    >
-                      <Icon name={"bookmark-add"} size={25} color={"#fff"} />
-                      <Text style={{ color: "#fff" }}>Add</Text>
-                    </View>
-                  )}
+                  <Icon
+                    name={!inWatchList(item?.id) ? "add" : "remove"}
+                    size={20}
+                    color={"#fff"}
+                  />
                 </TouchableOpacity>
               )}
             </View>
@@ -97,15 +73,14 @@ const styles = StyleSheet.create({
     display: "flex",
     width: "95%",
     flexDirection: "row",
-    height: 100,
+    height: 70,
     marginVertical: 10,
     marginHorizontal: 5,
     paddingHorizontal: 5,
     gap: 10,
   },
   image: {
-    width: 70,
-    height: 100,
+    aspectRatio: 16 / 16,
     resizeMode: "cover",
     borderRadius: 5,
   },
@@ -113,12 +88,13 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: "#fff",
     textAlign: "left",
-    wrap: "wrap",
   },
   desContainer: {
     width: "80%",
     height: "100%",
-    gap: 5,
+    gap: 10,
+    flexDirection: "row",
+    alignItems: "center",
   },
   desIcon: {
     flexDirection: "row",
@@ -129,7 +105,20 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   descText: {
-    color: "#fff",
+    color: "#bfbfbf",
     fontSize: 12,
+  },
+  btn2: {
+    backgroundColor: "rgba(0, 0, 0, 0.51)",
+    marginTop: 10,
+    padding: 10,
+    borderRadius: 10,
+    borderColor: "#fff",
+    borderWidth: 1,
+    height: 45,
+    width: 45,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

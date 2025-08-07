@@ -12,7 +12,7 @@ import {
   ScrollView,
   TextInput,
 } from "react-native-gesture-handler";
-import Icon from "react-native-vector-icons/MaterialIcons";
+import Icon from "react-native-vector-icons/Ionicons";
 import { useList } from "./Provider/WhatchlistProvider";
 import { useNavigation } from "expo-router";
 
@@ -20,7 +20,7 @@ export default function ContinueWatchingList() {
   const { continueArray, removeFromContinue } = useList();
   const navigation = useNavigation();
   return (
-    <GestureHandlerRootView style={{ width: "100%" }}>
+    <GestureHandlerRootView style={{ width: "100%", paddingRight: 10 }}>
       <ScrollView
         scrollEnabled={true}
         horizontal={true}
@@ -54,20 +54,14 @@ export default function ContinueWatchingList() {
             >
               <LinearGradient
                 colors={["transparent", "#1a1a1a"]}
-                start={{ x: 0.5, y: 0.2 }}
-                end={{ x: 0.5, y: -0.2 }}
-                style={styles.slide}
-              ></LinearGradient>
-              <LinearGradient
-                colors={["transparent", "#1a1a1a"]}
                 start={{ x: 0.5, y: 0.4 }}
                 end={{ x: 0.5, y: 1 }}
                 style={styles.slide}
               ></LinearGradient>
             </ImageBackground>
             <Icon
-              name="play-arrow"
-              size={30}
+              name="play"
+              size={25}
               color={"#32a88b"}
               style={styles.playbtn}
             />
@@ -75,48 +69,54 @@ export default function ContinueWatchingList() {
               style={styles.closebtn}
               onPress={() => removeFromContinue(item)}
             >
-              <Icon name="close" size={30} color={"white"} />
+              <Icon name="close-circle-outline" size={20} color={"white"} />
             </TouchableOpacity>
-            <Text
-              numberOfLines={3}
-              style={{
-                color: "#fff",
-                fontWeight: "bold",
-                fontSize: 13,
-                position: "absolute",
-                top: 0,
-                left: 0,
-                padding: 5,
-              }}
-            >
-              {item?.name}
-            </Text>
             <View
               style={{
                 position: "absolute",
                 bottom: 0,
                 left: 0,
-                padding: 5,
                 paddingBottom: 10,
                 width: "90%",
               }}
             >
-              <Text
-                numberOfLines={3}
-                style={{
-                  color: "#fff",
-                  fontWeight: "bold",
-                  fontSize: 13,
-                }}
-              >
-                Episode {item?.number}
-              </Text>
               <View
                 style={{
                   width: "100%",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  paddingHorizontal: 2,
+                }}
+              >
+                <Text
+                  numberOfLines={3}
+                  style={{
+                    color: "#fff",
+                    fontWeight: "bold",
+                    fontSize: 13,
+                  }}
+                >
+                  {item?.name}
+                </Text>
+                <Text
+                  numberOfLines={3}
+                  style={{
+                    color: "#fff",
+                    fontWeight: "bold",
+                    fontSize: 13,
+                  }}
+                >
+                  Ep {item?.number}
+                </Text>
+              </View>
+              <View
+                style={{
+                  width: "95%",
                   backgroundColor: "#888",
                   height: 4,
                   borderRadius: 5,
+                  marginLeft: 5,
                 }}
               >
                 <View
@@ -138,29 +138,30 @@ export default function ContinueWatchingList() {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 10,
     alignItems: "center",
     height: 250,
     alignItems: "center",
     justifyContent: "center",
+    marginRight: 10,
   },
 
   scrollContainer: {
     overflow: "scroll",
-    marginVertical: 10,
   },
   closebtn: {
     position: "absolute",
-    top: 0,
-    right: 0,
+    top: 5,
+    right: 5,
+    backgroundColor: "#555",
+    borderRadius: 50,
   },
 
   btn: {
-    marginHorizontal: 10,
     width: 225,
     alignItems: "left",
     marginTop: 10,
     height: 150,
+    marginLeft: 10,
   },
 
   searchBar: {

@@ -50,7 +50,7 @@ const AnimeList = ({ data }) => {
               ></LinearGradient>
             </ImageBackground>
             <Text numberOfLines={1} style={styles.text}>
-              {item.title}
+              {item.title.english || item.title.romaji}
             </Text>
           </TouchableOpacity>
         ))}

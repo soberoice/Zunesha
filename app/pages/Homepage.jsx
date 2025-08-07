@@ -30,9 +30,9 @@ const Homepage = () => {
       try {
         setLoading(true);
         const apiUrl = process.env.EXPO_PUBLIC_API_URL;
-        const topResponse = await fetch(`${apiUrl}/anime/zoro/top-airing`);
-        const newResponse = await fetch(`${apiUrl}/anime/zoro/recent-episodes`);
-        const popularRes = await fetch(`${apiUrl}/anime/zoro/most-favorite`);
+        const topResponse = await fetch(`${apiUrl}/meta/anilist/naruto`);
+        const newResponse = await fetch(`${apiUrl}/meta/anilist/one-piece`);
+        const popularRes = await fetch(`${apiUrl}/meta/anilist/attack`);
         const newData = await newResponse.json();
         const topData = await topResponse.json();
         const popularData = await popularRes.json();
@@ -77,7 +77,7 @@ const Homepage = () => {
           </View>
         )}
         {topAiring && (
-          <View style={{ marginTop: 15 }}>
+          <View style={{ marginTop: 5 }}>
             <View
               style={{
                 flexDirection: "column",

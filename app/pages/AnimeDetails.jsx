@@ -32,8 +32,6 @@ const AnimeDetails = ({ route }) => {
   const [loading, setLoading] = useState(false);
   const [desToggle, setDesToggle] = useState(false);
   const isInWatchList = data?.id ? inWatchList(id) : false;
-  const [metaData, setMetaData] = useState();
-  const [anilist, setAnilist] = useState();
   const navigation = useNavigation();
   const [remainingSeconds, setRemainingSeconds] = useState(null);
 
@@ -81,10 +79,13 @@ const AnimeDetails = ({ route }) => {
       try {
         setLoading(true);
         const apiUrl = process.env.EXPO_PUBLIC_API_URL;
-        const response = await fetch(`${apiUrl}/anime/zoro/info?id=${id}`);
+        const response = await fetch(
+          `${apiUrl}/meta/anilist/info/${id}?provider=animepahe`
+        );
         console.log("Anime Id: ", id);
         const res = await response.json();
         setData(res);
+        setRemainingSeconds(res.nextAiringEpisode?.timeUntilAiring);
       } catch (error) {
         console.error(error);
       } finally {
@@ -96,43 +97,7 @@ const AnimeDetails = ({ route }) => {
     fetchData();
   }, [id]);
 
-  useEffect(() => {
-    if (data) {
-      const fetchMeta = async () => {
-        try {
-          setMetaData();
-          const apiUrl = process.env.EXPO_PUBLIC_API_URL;
-          const meta = await fetch(`${apiUrl}/meta/mal/info/${data?.malID}`);
-          console.log("MAL Id: ", data.malID);
-          const metaRes = await meta.json();
-          setMetaData(metaRes);
-          // console.log("meta data: ", metaRes);
-        } catch (error) {
-          console.log("error fetching meta data: ", error);
-        }
-      };
-      const fetchAnilistMeta = async () => {
-        try {
-          setAnilist();
-          const apiUrl = process.env.EXPO_PUBLIC_API_URL;
-          const meta = await fetch(
-            `${apiUrl}/meta/anilist/info/${data?.alID}?provider=zoro`
-          );
-          console.log("anilist id: ", data.alID);
-          const metaRes = await meta.json();
-          setAnilist(metaRes);
-          // console.log("meta data: ", metaRes);
-          setRemainingSeconds(metaRes?.nextAiringEpisode?.timeUntilAiring);
-        } catch (error) {
-          console.log("error fetching meta data: ", error);
-        }
-      };
-      fetchMeta();
-      fetchAnilistMeta();
-    }
-  }, [data]);
-
-  if (loading || !metaData || !anilist) {
+  if (loading) {
     return (
       <View style={styles.container}>
         <Text>
@@ -144,10 +109,7 @@ const AnimeDetails = ({ route }) => {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
-        <ImageBackground
-          style={styles.image}
-          source={{ uri: anilist?.cover || data?.image }}
-        >
+        <ImageBackground style={styles.image} source={{ uri: data?.cover }}>
           <LinearGradient
             colors={["transparent", "#1a1a1a"]}
             start={{ x: 0.5, y: 0.7 }}
@@ -186,7 +148,9 @@ const AnimeDetails = ({ route }) => {
             >
               <View style={{ width: "90%" }}>
                 <Text style={styles.text} numberOfLines={1}>
-                  {data?.title}
+                  {data?.title.english ||
+                    data?.title.romaji ||
+                    data?.title.native}
                 </Text>
                 <View
                   style={{
@@ -217,14 +181,14 @@ const AnimeDetails = ({ route }) => {
                     }}
                   >
                     <Icon name="star-rate" color={"#32a88b"} size={15} />
-                    {metaData?.rating && (
+                    {data?.rating && (
                       <Text
                         style={{
                           fontSize: 13,
                           color: "#fff",
                         }}
                       >
-                        {metaData?.rating.toFixed(1)}
+                        {(data?.rating / 10).toFixed(1)}
                       </Text>
                     )}
                   </View>
@@ -439,20 +403,24 @@ const AnimeDetails = ({ route }) => {
           </TouchableOpacity>
         </View>
         <View style={{ height: 250, alignItems: "center" }}>
-          {tab === "Episodes" && data?.episodes?.length > 0 && metaData && (
+          {tab === "Episodes" && data?.episodes?.length > 0 && (
             <AnimeDetailsEpList
               ep={data.episodes}
               image={data?.image}
-              hasDub={data.hasDub}
-              hasSub={data.hasSub}
-              cover={anilist?.cover || data?.image}
-              name={data?.title}
+              // hasDub={data.hasDub}
+              // hasSub={data.hasSub}
+              cover={data?.cover || data.image}
+              name={
+                data?.title?.english ||
+                data?.title?.romaji ||
+                data?.title.native
+              }
             />
           )}
           {tab === "Related" && (
-            <Slidinglist data={data?.relatedAnime} limit={15} />
+            <Slidinglist data={data?.relations} limit={15} />
           )}
-          {tab === "Trailer" && (
+          {tab === "Trailer" && data?.trailer?.id && (
             <View style={{ width: "100%", alignItems: "center" }}>
               <View style={{ width: "100%" }}>
                 <Text
@@ -465,14 +433,17 @@ const AnimeDetails = ({ route }) => {
                     paddingLeft: 10,
                   }}
                 >
-                  {data?.title} Trailer
+                  {data?.title.english ||
+                    data?.title.romaji ||
+                    data?.title.native}{" "}
+                  Trailer
                 </Text>
               </View>
               <YoutubeIframe
                 height={250}
                 width={"95%"}
                 play={false}
-                videoId={metaData?.trailer?.id}
+                videoId={data?.trailer?.id}
                 webViewProps={{
                   allowsFullscreenVideo: false,
                 }}
@@ -495,9 +466,7 @@ const AnimeDetails = ({ route }) => {
           )}
         </View>
         <View>
-          {anilist?.characters && (
-            <CharacterList characters={anilist?.characters} />
-          )}
+          {data?.characters && <CharacterList characters={data?.characters} />}
         </View>
       </ScrollView>
     </SafeAreaView>

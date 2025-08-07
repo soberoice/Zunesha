@@ -54,7 +54,7 @@ const Slidinglist = ({ data, limit, start }) => {
               ></LinearGradient>
             </ImageBackground>
             <Text numberOfLines={1} style={styles.text}>
-              {item.title}
+              {item.title.english || item.title.romaji}
             </Text>
           </TouchableOpacity>
         ))}
@@ -66,10 +66,11 @@ export default Slidinglist;
 
 const styles = StyleSheet.create({
   scrollContainer: {
-    padding: 16,
+    padding: 10,
     flexDirection: "row",
     height: 250,
     flexWrap: "nowrap",
+    gap: 10,
   },
   slide: {
     height: "100%",
@@ -77,7 +78,6 @@ const styles = StyleSheet.create({
   itemContainer: {
     height: 175,
     paddingBottom: 10,
-    marginHorizontal: 10,
     aspectRatio: 9 / 12,
   },
   image: {

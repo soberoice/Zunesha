@@ -14,7 +14,7 @@ import {
 import Video from "react-native-video";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import * as ScreenOrientation from "expo-screen-orientation";
-import Icon from "react-native-vector-icons/SimpleLineIcons";
+import Icon from "react-native-vector-icons/FontAwesome5";
 import { useMemo } from "react";
 import VideoSettings from "../components/VideoSettings";
 import { useNavigation } from "expo-router";
@@ -23,6 +23,10 @@ import EpisodeList from "../components/EpisodeList";
 import { useSharedValue } from "react-native-reanimated";
 import Slider from "@react-native-community/slider";
 import { useList } from "../components/Provider/WhatchlistProvider";
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import Octicons from "@expo/vector-icons/Octicons";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 
 function usePrevious(value) {
   const ref = useRef();
@@ -68,10 +72,11 @@ const WatchEpisode = ({ route }) => {
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const timeoutRef = useRef(null);
-  const videoSource = data?.sources[0]?.url;
   const [isMute, setIsMute] = useState(false);
   const [skipIntro, setSkipIntro] = useState(false);
   const progress = useSharedValue();
+  const [qualityIndex, setQualityIndex] = useState(0);
+  const videoSource = data?.sources[qualityIndex]?.url;
   const [playerDimensions, setPlayerDimensions] = useState({
     width: 0,
     height: 0,
@@ -252,7 +257,7 @@ const WatchEpisode = ({ route }) => {
       setLoading(true);
       const apiUrl = process.env.EXPO_PUBLIC_API_URL;
       const response = await fetch(
-        `${apiUrl}/anime/zoro/watch/${id}?dub=${isDub}`
+        `${apiUrl}/anime/animepahe/watch?episodeId=${id}`
       );
       const res = await response.json();
       setData(res);
@@ -269,7 +274,7 @@ const WatchEpisode = ({ route }) => {
   useEffect(() => {
     fetchData();
     setSubtitleIndex(undefined);
-  }, [id]);
+  }, [id, qualityIndex]);
   useEffect(() => {
     if (isDub && episodeHasDub) {
       fetchData();
@@ -529,7 +534,7 @@ const WatchEpisode = ({ route }) => {
                         onPress={() => setToggleSettings(!toggleSettings)}
                       >
                         <Text style={styles.buttonText}>
-                          <Icon name={"settings"} size={20} color="#fff" />
+                          <Ionicons name="settings" size={20} color="#fff" />
                         </Text>
                       </TouchableOpacity>
                     </View>
@@ -540,7 +545,7 @@ const WatchEpisode = ({ route }) => {
                       onPress={() => handleRewind(false)}
                     >
                       <Text style={styles.buttonText}>
-                        <Icon name={"control-start"} size={30} color="#fff" />
+                        <Icon name={"backward"} size={30} color="#fff" />
                       </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
@@ -548,15 +553,11 @@ const WatchEpisode = ({ route }) => {
                       onPress={() => handlePlayPress()}
                     >
                       <Text style={styles.buttonText}>
-                        <Icon
-                          name={
-                            playbackState.isPlaying
-                              ? "control-pause"
-                              : "control-play"
-                          }
-                          size={30}
-                          color="#fff"
-                        />
+                        {playbackState.isPlaying ? (
+                          <FontAwesome5 name="pause" size={30} color="#fff" />
+                        ) : (
+                          <FontAwesome5 name="pause" size={30} color="#fff" />
+                        )}
                       </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
@@ -564,7 +565,7 @@ const WatchEpisode = ({ route }) => {
                       onPress={() => handleRewind(true)}
                     >
                       <Text style={styles.buttonText}>
-                        <Icon name={"control-end"} size={30} color="#fff" />
+                        <Icon name={"forward"} size={30} color="#fff" />
                       </Text>
                     </TouchableOpacity>
                   </View>
@@ -622,23 +623,37 @@ const WatchEpisode = ({ route }) => {
                       >
                         {/* MUTE  */}
                         <TouchableOpacity onPress={() => handleVolumePress()}>
-                          <Icon
-                            name={!isMute ? "volume-2" : "volume-off"}
-                            color={"#fff"}
-                            size={20}
-                          />
+                          {isMute ? (
+                            <FontAwesome6
+                              name="volume-high"
+                              size={20}
+                              color="#fff"
+                            />
+                          ) : (
+                            <FontAwesome6
+                              name="volume-xmark"
+                              size={20}
+                              color="#fff"
+                            />
+                          )}
                         </TouchableOpacity>
                         <TouchableOpacity
                           onPress={() => handleFullscreenToggle()}
                         >
                           <Text>
-                            <Icon
-                              name={
-                                isFullScreen ? "size-actual" : "size-fullscreen"
-                              }
-                              size={15}
-                              color={"#fff"}
-                            />
+                            {isFullScreen ? (
+                              <Octicons
+                                name="screen-normal"
+                                size={24}
+                                color="#fff"
+                              />
+                            ) : (
+                              <Octicons
+                                name="screen-full"
+                                size={24}
+                                color="#fff"
+                              />
+                            )}
                           </Text>
                         </TouchableOpacity>
                       </View>
@@ -710,14 +725,11 @@ const WatchEpisode = ({ route }) => {
       {isVideoReady && (
         <VideoSettings
           isFullScreen={isFullScreen}
-          skipIntro={skipIntro}
-          setSkipIntro={setSkipIntro}
           toggleSettings={toggleSettings}
           setToggleSettings={setToggleSettings}
-          setSubtitleIndex={setSubtitleIndex}
-          subtileTracks={subtitleTracks}
-          subtitleIndex={subtitleIndex}
-          skipIntroFunc={skipIntroFunc}
+          qualitySources={data?.sources}
+          qualityIndex={qualityIndex}
+          setQualityIndex={setQualityIndex}
         />
       )}
     </View>

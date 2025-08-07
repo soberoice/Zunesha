@@ -72,7 +72,7 @@ const AnimeDetailsEpList = ({ name, ep, image, hasDub, hasSub, cover }) => {
 
           <ImageBackground
             borderRadius={5}
-            source={{ uri: cover }}
+            source={{ uri: item?.image || cover }}
             style={styles.image}
           >
             <LinearGradient
@@ -159,7 +159,7 @@ const AnimeDetailsEpList = ({ name, ep, image, hasDub, hasSub, cover }) => {
                     ep: ep,
                     title: item.title,
                     number: item.number,
-                    cover: cover,
+                    cover: item.image,
                     hasDub: hasDub,
                     hasSub: hasSub,
                     episodeHasDub: item.isDubbed,
@@ -187,7 +187,7 @@ const AnimeDetailsEpList = ({ name, ep, image, hasDub, hasSub, cover }) => {
                 </View>
                 <ImageBackground
                   borderRadius={5}
-                  source={{ uri: cover }}
+                  source={{ uri: item?.image || cover }}
                   style={styles.image}
                 >
                   <LinearGradient

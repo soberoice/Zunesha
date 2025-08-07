@@ -15,13 +15,10 @@ import {
 const VideoSettings = ({
   toggleSettings,
   setToggleSettings,
-  subtileTracks,
-  subtitleIndex,
-  setSubtitleIndex,
-  skipIntro,
-  setSkipIntro,
-  skipIntroFunc,
   isFullScreen,
+  qualitySources,
+  qualityIndex,
+  setQualityIndex,
 }) => {
   const slideAnim = useRef(new Animated.Value(0)).current;
 
@@ -37,14 +34,6 @@ const VideoSettings = ({
     inputRange: [0, 1],
     outputRange: [0, isFullScreen ? 300 : 400],
   });
-  const isEnabled = skipIntro;
-
-  const toggleSwitch = () => {
-    const newSkipState = !skipIntro;
-    setSkipIntro(newSkipState);
-    console.log("skipIntro", newSkipState);
-    skipIntroFunc(newSkipState);
-  };
 
   return (
     <GestureHandlerRootView style={toggleSettings ? styles.overlay : null}>
@@ -69,53 +58,32 @@ const VideoSettings = ({
           scrollEnabled={true}
           contentContainerStyle={styles.scrollContent}
         >
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <View>
-              <Text style={styles.subtitleLabel}>Skip Intro</Text>
-              <Text style={{ color: "#32a88b" }}>
-                {isEnabled ? "ON" : "OFF"}
-              </Text>
-            </View>
-            <Switch
-              trackColor={{ false: "#767577", true: "#32a88b" }}
-              thumbColor={skipIntro ? "#32a88b" : "#fff"}
-              ios_backgroundColor="#3e3e3e"
-              onValueChange={toggleSwitch}
-              value={skipIntro}
-            />
-          </View>
-          <Text style={styles.subtitleLabel}>Subtitles</Text>
+          <Text style={styles.subtitleLabel}>Quality</Text>
           <View style={styles.subtitleWrapper}>
-            {subtileTracks?.map((track, index) => (
+            {qualitySources?.map((track, index) => (
               <TouchableOpacity
                 key={index}
                 style={[
                   {
                     backgroundColor:
-                      subtitleIndex !== index ? "#32a88b" : "transparent",
+                      qualityIndex !== index ? "#32a88b" : "transparent",
                     borderColor:
-                      subtitleIndex === index ? "#32a88b" : "transparent",
-                    borderWidth: subtitleIndex === index ? 1 : 0,
+                      qualityIndex === index ? "#32a88b" : "transparent",
+                    borderWidth: qualityIndex === index ? 1 : 0,
                   },
                   styles.subBtn,
                 ]}
-                onPress={() => setSubtitleIndex(index)}
+                onPress={() => setQualityIndex(index)}
               >
                 <Text
                   style={{
-                    color: subtitleIndex === index ? "#32a88b" : "#fff",
+                    color: qualityIndex === index ? "#32a88b" : "#fff",
                     textAlign: "center",
                     paddingVertical: 10,
                     paddingHorizontal: 10,
                   }}
                 >
-                  {track.lang}
+                  {track.quality}
                 </Text>
               </TouchableOpacity>
             ))}

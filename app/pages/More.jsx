@@ -29,13 +29,16 @@ const More = ({ route }) => {
   useEffect(() => {
     const fetchData = async () => {
       console.log("More Genre Value: ", value);
+      const params = new URLSearchParams({
+        "geners[]": value,
+      });
       try {
         setData();
         setLoading(true);
         const apiUrl = process.env.EXPO_PUBLIC_API_URL;
         const respons = await fetch(
           type === `genre`
-            ? `${apiUrl}/anime/zoro/genre/${value}?page=${page}`
+            ? `${apiUrl}/meta/anilist/advanced-search?gener[]=${value}&page=${page}`
             : `${apiUrl}/anime/zoro/${value}?page=${page}`
         );
         const res = await respons.json();

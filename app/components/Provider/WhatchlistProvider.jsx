@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { ToastAndroid } from "react-native";
 
 const WatchListContext = createContext();
 
@@ -41,13 +42,27 @@ export const WatchListProvider = ({ children }) => {
   const addToList = (item) => {
     if (!item || typeof item !== "object" || !item.id) {
       console.warn("Attempted to add invalid item to watch list:", item);
+      ToastAndroid.show(
+        `Failed to Add ${
+          item.title.english || item.title.romanji
+        } to WatchList`,
+        ToastAndroid.SHORT
+      );
       return;
     }
     setWatchListArray((prev) => [...prev, item]);
+    ToastAndroid.show(
+      `${item.title.english || item.title.romanji} Added to WatchList`,
+      ToastAndroid.SHORT
+    );
   };
 
   const removeFromList = (item) => {
     setWatchListArray(watchListArray.filter((i) => i?.id !== item?.id));
+    ToastAndroid.show(
+      `${item.title.english || item.title.romanji} Removed From WatchList`,
+      ToastAndroid.SHORT
+    );
   };
 
   function addToWatchList(item) {
@@ -97,7 +112,7 @@ export const WatchListProvider = ({ children }) => {
   }, [continueArray]);
 
   const addToContinueList = (item) => {
-    setContinueArray((prev) => [...prev, item]);
+    setContinueArray((prev) => [item, ...prev]);
   };
 
   const removeFromContinue = (item) => {
@@ -120,7 +135,11 @@ export const WatchListProvider = ({ children }) => {
     const exists = continueArray.some((i) => i?.epId === itemId);
     return exists;
   }
-
+  useEffect(() => {
+    setWatchListArray([]);
+    setContinueArray([]);
+    console.log("watchlist: ", watchListArray);
+  }, []);
   return (
     <WatchListContext.Provider
       value={{

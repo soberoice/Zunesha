@@ -1,5 +1,5 @@
 import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ActivityIndicator } from "react-native";
 import {
   GestureHandlerRootView,
@@ -10,26 +10,40 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import Pagination from "../components/Pagination";
 import HorizontalAnimeList from "../components/HorizontalAnimeList";
 
+function debounce(fn, delay) {
+  let timer;
+  return function (...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn.apply(this, args), delay);
+  };
+}
+
 const Searchscreen = () => {
   const [searchInput, setSearchInput] = useState();
   const [searchResults, setSearchResults] = useState();
-  const [totalPages, setTotalPages] = useState();
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const navigation = useNavigation();
-  const fetchData = async () => {
+
+  const debouncedSearch = useRef(
+    debounce((searchTerm) => {
+      console.log("Searching for:", searchTerm);
+      setPage(1);
+      setSearchInput(searchTerm);
+    }, 500)
+  ).current;
+
+  const fetchData = async (searchTerm) => {
     try {
       setLoading(true);
       setSearchResults([]);
-      setPage(1);
       setLoading(true);
       const apiUrl = process.env.EXPO_PUBLIC_API_URL;
       const respons = await fetch(
-        `${apiUrl}/anime/zoro/${searchInput}?page=${page}`
+        `${apiUrl}/meta/anilist/${searchTerm}?page=${page}`
       );
       const data = await respons.json();
       setSearchResults(data);
-      setTotalPages(data.totalPages);
     } catch (error) {
       console.error(error);
     } finally {
@@ -37,9 +51,14 @@ const Searchscreen = () => {
     }
   };
   useEffect(() => {
-    fetchData();
-  }, [page]);
-
+    console.log(
+      "Fetching data for page:",
+      page,
+      "with search term:",
+      searchInput
+    );
+    fetchData(searchInput);
+  }, [page, searchInput]);
   return (
     <GestureHandlerRootView>
       <View style={styles.container}>
@@ -70,7 +89,9 @@ const Searchscreen = () => {
             }}
           >
             <TextInput
-              onChangeText={(text) => setSearchInput(text)}
+              onChangeText={(text) => {
+                debouncedSearch(text);
+              }}
               placeholder="Search Anime"
               placeholderTextColor={"#32a88b"}
               style={styles.searchBar}
@@ -84,7 +105,6 @@ const Searchscreen = () => {
             <ScrollView>
               <HorizontalAnimeList data={searchResults.results} />
               <Pagination
-                totalPages={totalPages}
                 setPage={setPage}
                 page={page}
                 hasNextPage={searchResults?.hasNextPage}
@@ -125,5 +145,6 @@ const styles = StyleSheet.create({
     color: "#32a88b",
     height: 50,
     marginHorizontal: "auto",
+    fontWeight: 500,
   },
 });

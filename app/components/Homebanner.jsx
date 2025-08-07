@@ -34,7 +34,7 @@ const Homebanner = () => {
       try {
         setLoading(true);
         const apiUrl = process.env.EXPO_PUBLIC_API_URL;
-        const response = await fetch(`${apiUrl}/anime/zoro/most-popular`);
+        const response = await fetch(`${apiUrl}/meta/anilist/trending`);
         const json = await response.json();
         console.log(json);
         const originalSlides = json.results.slice(0, 5);
@@ -172,7 +172,7 @@ const Homebanner = () => {
         style={styles.slide}
       >
         <Text numberOfLines={1} style={styles.text}>
-          {data[currentIndex]?.title}
+          {data[currentIndex]?.title?.english}
         </Text>
         <View
           style={{
